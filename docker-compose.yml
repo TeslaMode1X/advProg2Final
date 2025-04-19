@@ -1,0 +1,35 @@
+name: finalissimo
+services:
+  user_db:
+    container_name: users_db
+    image: postgres:15
+    restart: always
+    env_file:
+      - ./user/.env.user
+    ports:
+      - "5433:5432"
+    networks:
+      - final-network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  user:
+    container_name: user_microservice
+    build:
+      context: .
+      dockerfile: ./user/Dockerfile
+    ports:
+      - "9091:9091"
+    env_file:
+      - ./user/.env.user
+    depends_on:
+      user_db:
+        condition: service_healthy
+    networks:
+      - final-network
+
+networks:
+  final-network:
+    driver: bridge

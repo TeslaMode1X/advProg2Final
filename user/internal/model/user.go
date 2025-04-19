@@ -41,7 +41,7 @@ func ToUserEntityFromUserDomain(u *User) *UserEntity {
 }
 
 type UserEntity struct {
-	ID        uuid.UUID  `gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
+	ID        uuid.UUID  `gorm:"type:uuid;primaryKey"`
 	Username  string     `gorm:"size:50;not null"`
 	Password  string     `gorm:"size:255;not null"`
 	Email     string     `gorm:"size:254;not null;unique"`
@@ -51,7 +51,7 @@ type UserEntity struct {
 }
 
 func (u *UserEntity) TableName() string {
-	return "user"
+	return "users"
 }
 
 func ToUserDomainFromEntity(ent *UserEntity) *User {

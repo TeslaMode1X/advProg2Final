@@ -5,6 +5,7 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/user/config"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/interfaces"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/model"
+	"github.com/gofrs/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -29,11 +30,14 @@ func (p *postgresDatabase) Migrate() {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
+	userUUID, _ := uuid.NewV4()
+
 	var count int64
 	p.GetDB().Model(&model.UserEntity{}).Count(&count)
 	if count == 0 {
 		users := []model.UserEntity{
 			{
+				ID:       userUUID,
 				Username: "admin",
 				Password: "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 123
 				Email:    "admin@test.com",

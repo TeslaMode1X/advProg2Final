@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"github.com/TeslaMode1X/advProg2Final/user/config"
 	dbInstance "github.com/TeslaMode1X/advProg2Final/user/internal/infrastructure/db"
+	"github.com/TeslaMode1X/advProg2Final/user/internal/server"
+	"log"
+	"os"
 )
 
 func main() {
@@ -13,5 +15,7 @@ func main() {
 
 	db.Migrate()
 
-	fmt.Printf("%+v\n %+v", db, cfg)
+	l := log.New(os.Stdout, "user-rpc ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+
+	server.NewGinServer(&cfg, db, l).Start()
 }
