@@ -3,7 +3,10 @@ package server
 import (
 	"fmt"
 	"github.com/TeslaMode1X/advProg2Final/user/config"
+	"github.com/TeslaMode1X/advProg2Final/user/internal/handler"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/interfaces"
+	"github.com/TeslaMode1X/advProg2Final/user/internal/repository"
+	"github.com/TeslaMode1X/advProg2Final/user/internal/service"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -24,9 +27,22 @@ func (s *ginServer) Start() {
 		c.String(http.StatusOK, "OK")
 	})
 
+	s.initializeUserHandler()
+
 	serverUrl := fmt.Sprintf(":%s", s.cfg.Server.Port)
 	if err := s.app.Run(serverUrl); err != nil {
 		s.log.Panic(err)
+	}
+}
+
+func (s *ginServer) initializeUserHandler() {
+	userRepos := repository.NewUserRepo(s.db)
+	userService := service.NewUserService(userRepos)
+	userHandler := handler.NewUserHandler(userService)
+
+	userRoutes := s.app.Group("/user")
+	{
+		userRoutes.POST("/registration", userHandler.UserRegister)
 	}
 }
 
