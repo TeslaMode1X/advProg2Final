@@ -29,3 +29,14 @@ func (us *UserService) UserRegisterService(user model.User) (uuid.UUID, error) {
 
 	return id, nil
 }
+
+func (us *UserService) UserLoginService(login, password string) (uuid.UUID, error) {
+	const op = "user.service.UserLoginService"
+
+	id, err := us.userRepo.UserLoginRepo(login, password)
+	if err != nil {
+		return uuid.Nil, errors.New(op + ": " + err.Error())
+	}
+
+	return id, nil
+}

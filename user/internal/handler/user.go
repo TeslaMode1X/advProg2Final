@@ -6,6 +6,7 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/user/internal/model"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/model/dto"
 	"github.com/TeslaMode1X/advProg2Final/user/pkg/crypto"
+	"github.com/TeslaMode1X/advProg2Final/user/pkg/security"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -46,6 +47,32 @@ func (h *UserHandler) UserRegister(c *gin.Context) {
 		handler.Response(c, http.StatusInternalServerError, op, err.Error())
 		return
 	}
+
+	handler.Response(c, http.StatusOK, op, dto.CreateUserResponse{ID: id})
+}
+
+func (h *UserHandler) UserLogin(c *gin.Context) {
+	const op = "handler.user.UserLogin"
+
+	var req dto.LoginUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		handler.Response(c, http.StatusBadRequest, op, err.Error())
+		return
+	}
+
+	id, err := h.userService.UserLoginService(req.Email, req.Password)
+	if err != nil {
+		handler.Response(c, http.StatusInternalServerError, op, err.Error())
+		return
+	}
+
+	token, err := security.CreateToken(id)
+	if err != nil {
+		handler.Response(c, http.StatusInternalServerError, op, "Failed to generate token")
+		return
+	}
+
+	c.Header("Authorization", "Bearer "+token)
 
 	handler.Response(c, http.StatusOK, op, dto.CreateUserResponse{ID: id})
 }

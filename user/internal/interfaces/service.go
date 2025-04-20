@@ -6,7 +6,7 @@ import (
 )
 
 type UserService interface {
-	//UserLoginService()
+	UserLoginService(login, password string) (uuid.UUID, error)
 	UserRegisterService(user model.User) (uuid.UUID, error)
 	//UserExistsService(c *gin.Context)
 }

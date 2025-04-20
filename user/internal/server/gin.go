@@ -43,7 +43,15 @@ func (s *ginServer) initializeUserHandler() {
 	userRoutes := s.app.Group("/user")
 	{
 		userRoutes.POST("/registration", userHandler.UserRegister)
+		userRoutes.POST("/login", userHandler.UserLogin)
 	}
+
+	// TODO apply middleware on some route
+	//protected := s.app.Group("/api")
+	//protected.Use(middleware.AuthRequired())
+	//{
+	//	// GET, POST...
+	//}
 }
 
 func NewGinServer(conf *config.Config, db interfaces.Database, log *log.Logger) interfaces.Server {

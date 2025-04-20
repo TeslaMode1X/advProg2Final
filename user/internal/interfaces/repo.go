@@ -6,6 +6,6 @@ import (
 )
 
 type UserRepo interface {
-	//UserLoginRepo()
+	UserLoginRepo(login, password string) (uuid.UUID, error)
 	UserRegisterRepo(user model.User) (uuid.UUID, error)
 }
