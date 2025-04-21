@@ -40,3 +40,24 @@ func (us *UserService) UserLoginService(login, password string) (uuid.UUID, erro
 
 	return id, nil
 }
+
+func (us *UserService) UserGetByIdService(id string) (*model.User, error) {
+	const op = "service.user.UserGetByIdService"
+
+	user, err := us.userRepo.UserGetByIdRepo(id)
+	if err != nil {
+		return nil, errors.New(op + ": " + err.Error())
+	}
+
+	return user, nil
+}
+
+func (us *UserService) UserDeleteByIdService(id string) error {
+	const op = "service.user.UserDeleteByIdService"
+
+	if err := us.userRepo.UserDeleteByIdRepo(id); err != nil {
+		return errors.New(op + ": " + err.Error())
+	}
+
+	return nil
+}

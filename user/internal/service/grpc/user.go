@@ -73,3 +73,29 @@ func (g *UserServiceGrpc) UserRegistration(ctx context.Context, req *user.Reques
 		Id: id.String(),
 	}, nil
 }
+
+func (g *UserServiceGrpc) UserGetById(ctx context.Context, req *user.RequestUserGetById) (*user.ResponseUserGetById, error) {
+	const op = "grpc.user.UserGetById"
+
+	model, err := g.userService.UserGetByIdService(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &user.ResponseUserGetById{
+		Id:    model.ID.String(),
+		Name:  model.Username,
+		Email: model.Email,
+	}, nil
+}
+
+func (g *UserServiceGrpc) UserDeleteById(ctx context.Context, req *user.RequestUserGetById) (*user.Empty, error) {
+	var empty user.Empty
+
+	err := g.userService.UserDeleteByIdService(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &empty, nil
+}

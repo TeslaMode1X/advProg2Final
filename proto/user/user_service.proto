@@ -21,7 +21,19 @@ message RequestUserLogin {
   string password = 2;
 }
 
+message RequestUserGetById {
+  string id = 1;
+}
+
+message ResponseUserGetById {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+}
+
 service UserService {
   rpc UserLogin(RequestUserLogin) returns (UserResponse);
   rpc UserRegistration(RequestUserRegistration) returns (UserResponse);
+  rpc UserGetById(RequestUserGetById) returns (ResponseUserGetById);
+  rpc UserDeleteById(RequestUserGetById) returns (Empty);
 }

@@ -8,4 +8,6 @@ import (
 type UserRepo interface {
 	UserLoginRepo(login, password string) (uuid.UUID, error)
 	UserRegisterRepo(user model.User) (uuid.UUID, error)
+	UserGetByIdRepo(id string) (*model.User, error)
+	UserDeleteByIdRepo(id string) error
 }

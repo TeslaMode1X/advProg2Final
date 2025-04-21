@@ -221,6 +221,110 @@ func (x *RequestUserLogin) GetPassword() string {
 	return ""
 }
 
+type RequestUserGetById struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestUserGetById) Reset() {
+	*x = RequestUserGetById{}
+	mi := &file_proto_user_user_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestUserGetById) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestUserGetById) ProtoMessage() {}
+
+func (x *RequestUserGetById) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_user_user_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestUserGetById.ProtoReflect.Descriptor instead.
+func (*RequestUserGetById) Descriptor() ([]byte, []int) {
+	return file_proto_user_user_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *RequestUserGetById) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type ResponseUserGetById struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResponseUserGetById) Reset() {
+	*x = ResponseUserGetById{}
+	mi := &file_proto_user_user_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResponseUserGetById) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResponseUserGetById) ProtoMessage() {}
+
+func (x *ResponseUserGetById) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_user_user_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResponseUserGetById.ProtoReflect.Descriptor instead.
+func (*ResponseUserGetById) Descriptor() ([]byte, []int) {
+	return file_proto_user_user_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ResponseUserGetById) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ResponseUserGetById) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ResponseUserGetById) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
 var File_proto_user_user_service_proto protoreflect.FileDescriptor
 
 const file_proto_user_user_service_proto_rawDesc = "" +
@@ -236,10 +340,18 @@ const file_proto_user_user_service_proto_rawDesc = "" +
 	"\x05token\x18\x02 \x01(\tR\x05token\"D\n" +
 	"\x10RequestUserLogin\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword2\x8d\x01\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"$\n" +
+	"\x12RequestUserGetById\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"O\n" +
+	"\x13ResponseUserGetById\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email2\x8a\x02\n" +
 	"\vUserService\x127\n" +
 	"\tUserLogin\x12\x16.user.RequestUserLogin\x1a\x12.user.UserResponse\x12E\n" +
-	"\x10UserRegistration\x12\x1d.user.RequestUserRegistration\x1a\x12.user.UserResponseB\bZ\x06./userb\x06proto3"
+	"\x10UserRegistration\x12\x1d.user.RequestUserRegistration\x1a\x12.user.UserResponse\x12B\n" +
+	"\vUserGetById\x12\x18.user.RequestUserGetById\x1a\x19.user.ResponseUserGetById\x127\n" +
+	"\x0eUserDeleteById\x12\x18.user.RequestUserGetById\x1a\v.user.EmptyB\bZ\x06./userb\x06proto3"
 
 var (
 	file_proto_user_user_service_proto_rawDescOnce sync.Once
@@ -253,20 +365,26 @@ func file_proto_user_user_service_proto_rawDescGZIP() []byte {
 	return file_proto_user_user_service_proto_rawDescData
 }
 
-var file_proto_user_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_proto_user_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_user_user_service_proto_goTypes = []any{
 	(*Empty)(nil),                   // 0: user.Empty
 	(*RequestUserRegistration)(nil), // 1: user.RequestUserRegistration
 	(*UserResponse)(nil),            // 2: user.UserResponse
 	(*RequestUserLogin)(nil),        // 3: user.RequestUserLogin
+	(*RequestUserGetById)(nil),      // 4: user.RequestUserGetById
+	(*ResponseUserGetById)(nil),     // 5: user.ResponseUserGetById
 }
 var file_proto_user_user_service_proto_depIdxs = []int32{
 	3, // 0: user.UserService.UserLogin:input_type -> user.RequestUserLogin
 	1, // 1: user.UserService.UserRegistration:input_type -> user.RequestUserRegistration
-	2, // 2: user.UserService.UserLogin:output_type -> user.UserResponse
-	2, // 3: user.UserService.UserRegistration:output_type -> user.UserResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	4, // 2: user.UserService.UserGetById:input_type -> user.RequestUserGetById
+	4, // 3: user.UserService.UserDeleteById:input_type -> user.RequestUserGetById
+	2, // 4: user.UserService.UserLogin:output_type -> user.UserResponse
+	2, // 5: user.UserService.UserRegistration:output_type -> user.UserResponse
+	5, // 6: user.UserService.UserGetById:output_type -> user.ResponseUserGetById
+	0, // 7: user.UserService.UserDeleteById:output_type -> user.Empty
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -283,7 +401,7 @@ func file_proto_user_user_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_user_user_service_proto_rawDesc), len(file_proto_user_user_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

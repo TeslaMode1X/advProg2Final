@@ -55,3 +55,32 @@ func (ur *UserRepo) UserLoginRepo(login, password string) (uuid.UUID, error) {
 
 	return user.ID, nil
 }
+
+func (ur *UserRepo) UserGetByIdRepo(id string) (*model.User, error) {
+	const op = "user.repository.UserGetByIdRepo"
+
+	var user model.User
+	result := ur.db.GetDB().Where("id = ?", id).First(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("%s: user with such id %s not found", op, id)
+		}
+		return nil, fmt.Errorf("%s: %w", op, result.Error)
+	}
+
+	return &user, nil
+}
+
+func (ur *UserRepo) UserDeleteByIdRepo(id string) error {
+	const op = "user.repository.UserDeleteByIdRepo"
+
+	result := ur.db.GetDB().Where("id = ?", id).Delete(&model.User{})
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("%s: user with such id %s not found", op, id)
+		}
+		return fmt.Errorf("%s: %w", op, result.Error)
+	}
+	
+	return nil
+}

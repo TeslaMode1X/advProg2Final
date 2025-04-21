@@ -66,3 +66,43 @@ func (g *GatewayHandler) UserRegistration(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"id": resp.Id})
 }
+
+func (g *GatewayHandler) UserGetById(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+
+	req := &user.RequestUserGetById{
+		Id: id,
+	}
+
+	user, err := g.userClient.UserGetById(context.Background(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": user})
+}
+
+func (g *GatewayHandler) UserDeleteById(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+
+	req := &user.RequestUserGetById{
+		Id: id,
+	}
+
+	_, err := g.userClient.UserDeleteById(context.Background(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": "was deleted"})
+}

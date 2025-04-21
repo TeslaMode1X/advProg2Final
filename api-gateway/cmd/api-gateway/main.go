@@ -23,9 +23,16 @@ func main() {
 
 	gatewayHandler := handler.NewGatewayHandler(userConn)
 
-	r.POST("/user/login", gatewayHandler.UserLogin)
+	// USER THING
+	{
+		r.POST("/user/login", gatewayHandler.UserLogin)
 
-	r.POST("/user/registration", gatewayHandler.UserRegistration)
+		r.POST("/user/registration", gatewayHandler.UserRegistration)
+
+		r.GET("/user/:id", gatewayHandler.UserGetById)
+
+		r.DELETE("/user/:id", gatewayHandler.UserDeleteById)
+	}
 
 	err = r.Run(":8080")
 	if err != nil {
