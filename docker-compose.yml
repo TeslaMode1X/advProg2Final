@@ -21,12 +21,23 @@ services:
       context: .
       dockerfile: ./user/Dockerfile
     ports:
-      - "9091:9091"
+      - "50051:50051"
     env_file:
       - ./user/.env.user
     depends_on:
       user_db:
         condition: service_healthy
+    networks:
+      - final-network
+  api-gateway:
+    container_name: api_gateway
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user
     networks:
       - final-network
 

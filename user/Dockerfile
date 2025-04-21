@@ -5,10 +5,10 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY ./user ./user
-#COPY ./proto ./proto
+COPY ./proto ./proto
 
 WORKDIR /app/user
 RUN go build -o user_service ./cmd/user/main.go
 
-EXPOSE 9091
+EXPOSE 50051
 CMD ["./user_service"]
