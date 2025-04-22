@@ -34,32 +34,6 @@ func CreateToken(userID uuid.UUID) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyToken(tokenString string) (uuid.UUID, error) {
-	secretKey := getSecretKey()
-
-	token, err := jwt.ParseWithClaims(tokenString, &TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return secretKey, nil
-	})
-
-	if err != nil {
-		return uuid.Nil, fmt.Errorf("invalid token: %w", err)
-	}
-
-	if !token.Valid {
-		return uuid.Nil, fmt.Errorf("token is not valid")
-	}
-
-	claims, ok := token.Claims.(*TokenClaims)
-	if !ok {
-		return uuid.Nil, fmt.Errorf("invalid token claims")
-	}
-
-	return claims.UserID, nil
-}
-
 func getSecretKey() []byte {
 	key := os.Getenv("JWT_SECRET_KEY")
 	if key == "" {

@@ -1,7 +1,7 @@
 package model
 
 import (
-	ownErrors "github.com/TeslaMode1X/advProg2Final/user/internal/errors"
+	ownErrors "github.com/TeslaMode1X/advProg2Final/user/pkg/errors"
 	"github.com/gofrs/uuid"
 	"time"
 )

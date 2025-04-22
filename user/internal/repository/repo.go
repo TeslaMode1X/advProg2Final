@@ -8,6 +8,7 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/user/pkg/crypto"
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
+	"log"
 )
 
 type UserRepo struct {
@@ -81,6 +82,54 @@ func (ur *UserRepo) UserDeleteByIdRepo(id string) error {
 		}
 		return fmt.Errorf("%s: %w", op, result.Error)
 	}
-	
+
+	return nil
+}
+
+func (ur *UserRepo) UserExistsRepo(id string) (bool, error) {
+	const op = "user.repository.UserExistsRepo"
+
+	var user model.User
+	result := ur.db.GetDB().Where("id = ?", id).First(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return false, fmt.Errorf("%s: user with such id %s not found", op, id)
+		}
+		return false, fmt.Errorf("%s: %w", op, result.Error)
+	}
+
+	return true, nil
+}
+
+func (ur *UserRepo) UserUpdatePasswordRepo(id, oldPassword, newPassword string) error {
+	const op = "grpc.repository.UserUpdatePasswordRepo"
+
+	var user model.User
+	if err := ur.db.GetDB().Where("id = ?", id).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Printf("%s: user not found: %v", op, err)
+			return errors.New("user not found")
+		}
+		log.Printf("%s: failed to query user: %v", op, err)
+		return errors.New("failed to retrieve user")
+	}
+
+	if err := crypto.VerifyPassword(user.Password, oldPassword); err == false {
+		log.Printf("%s: incorrect old password: %v", op, err)
+		return errors.New("incorrect old password")
+	}
+
+	hashedNewPassword, err := crypto.HashPassword(newPassword)
+	if err != nil {
+		log.Printf("%s: failed to hash new password: %v", op, err)
+		return errors.New("failed to hash new password")
+	}
+
+	user.Password = hashedNewPassword
+	if err := ur.db.GetDB().Save(&user).Error; err != nil {
+		log.Printf("%s: failed to update password: %v", op, err)
+		return errors.New("failed to update password")
+	}
+
 	return nil
 }

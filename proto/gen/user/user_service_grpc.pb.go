@@ -19,10 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_UserLogin_FullMethodName        = "/user.UserService/UserLogin"
-	UserService_UserRegistration_FullMethodName = "/user.UserService/UserRegistration"
-	UserService_UserGetById_FullMethodName      = "/user.UserService/UserGetById"
-	UserService_UserDeleteById_FullMethodName   = "/user.UserService/UserDeleteById"
+	UserService_UserLogin_FullMethodName          = "/user.UserService/UserLogin"
+	UserService_UserRegistration_FullMethodName   = "/user.UserService/UserRegistration"
+	UserService_UserGetById_FullMethodName        = "/user.UserService/UserGetById"
+	UserService_UserDeleteById_FullMethodName     = "/user.UserService/UserDeleteById"
+	UserService_UserExists_FullMethodName         = "/user.UserService/UserExists"
+	UserService_UserChangePassword_FullMethodName = "/user.UserService/UserChangePassword"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -33,6 +35,8 @@ type UserServiceClient interface {
 	UserRegistration(ctx context.Context, in *RequestUserRegistration, opts ...grpc.CallOption) (*UserResponse, error)
 	UserGetById(ctx context.Context, in *RequestUserGetById, opts ...grpc.CallOption) (*ResponseUserGetById, error)
 	UserDeleteById(ctx context.Context, in *RequestUserGetById, opts ...grpc.CallOption) (*Empty, error)
+	UserExists(ctx context.Context, in *RequestUserGetById, opts ...grpc.CallOption) (*ResponseUserExists, error)
+	UserChangePassword(ctx context.Context, in *RequestUserChangePassword, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type userServiceClient struct {
@@ -83,6 +87,26 @@ func (c *userServiceClient) UserDeleteById(ctx context.Context, in *RequestUserG
 	return out, nil
 }
 
+func (c *userServiceClient) UserExists(ctx context.Context, in *RequestUserGetById, opts ...grpc.CallOption) (*ResponseUserExists, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResponseUserExists)
+	err := c.cc.Invoke(ctx, UserService_UserExists_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UserChangePassword(ctx context.Context, in *RequestUserChangePassword, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, UserService_UserChangePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -91,6 +115,8 @@ type UserServiceServer interface {
 	UserRegistration(context.Context, *RequestUserRegistration) (*UserResponse, error)
 	UserGetById(context.Context, *RequestUserGetById) (*ResponseUserGetById, error)
 	UserDeleteById(context.Context, *RequestUserGetById) (*Empty, error)
+	UserExists(context.Context, *RequestUserGetById) (*ResponseUserExists, error)
+	UserChangePassword(context.Context, *RequestUserChangePassword) (*Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -112,6 +138,12 @@ func (UnimplementedUserServiceServer) UserGetById(context.Context, *RequestUserG
 }
 func (UnimplementedUserServiceServer) UserDeleteById(context.Context, *RequestUserGetById) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserDeleteById not implemented")
+}
+func (UnimplementedUserServiceServer) UserExists(context.Context, *RequestUserGetById) (*ResponseUserExists, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserExists not implemented")
+}
+func (UnimplementedUserServiceServer) UserChangePassword(context.Context, *RequestUserChangePassword) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserChangePassword not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -206,6 +238,42 @@ func _UserService_UserDeleteById_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UserExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RequestUserGetById)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserExists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserExists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserExists(ctx, req.(*RequestUserGetById))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UserChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RequestUserChangePassword)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserChangePassword(ctx, req.(*RequestUserChangePassword))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +296,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserDeleteById",
 			Handler:    _UserService_UserDeleteById_Handler,
+		},
+		{
+			MethodName: "UserExists",
+			Handler:    _UserService_UserExists_Handler,
+		},
+		{
+			MethodName: "UserChangePassword",
+			Handler:    _UserService_UserChangePassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

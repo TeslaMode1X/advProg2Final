@@ -61,3 +61,24 @@ func (us *UserService) UserDeleteByIdService(id string) error {
 
 	return nil
 }
+
+func (us *UserService) UserExistsService(id string) (bool, error) {
+	const op = "service.user.UserExistsService"
+
+	exists, err := us.userRepo.UserExistsRepo(id)
+	if err != nil {
+		return false, errors.New(op + ": " + err.Error())
+	}
+
+	return exists, nil
+}
+
+func (us *UserService) UserUpdatePasswordService(id, oldPassword, newPassword string) error {
+	const op = "service.user.UserUpdatePasswordService"
+
+	if err := us.userRepo.UserUpdatePasswordRepo(id, oldPassword, newPassword); err != nil {
+		return errors.New(op + ": " + err.Error())
+	}
+
+	return nil
+}

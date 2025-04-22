@@ -10,5 +10,6 @@ type UserService interface {
 	UserRegisterService(user model.User) (uuid.UUID, error)
 	UserGetByIdService(id string) (*model.User, error)
 	UserDeleteByIdService(id string) error
-	//UserExistsService(c *gin.Context)
+	UserExistsService(id string) (bool, error)
+	UserUpdatePasswordService(id, oldPassword, newPassword string) error
 }

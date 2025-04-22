@@ -31,9 +31,21 @@ message ResponseUserGetById {
   string email = 3;
 }
 
+message ResponseUserExists {
+  bool exists = 1;
+}
+
+message RequestUserChangePassword {
+  string id = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}
+
 service UserService {
   rpc UserLogin(RequestUserLogin) returns (UserResponse);
   rpc UserRegistration(RequestUserRegistration) returns (UserResponse);
   rpc UserGetById(RequestUserGetById) returns (ResponseUserGetById);
   rpc UserDeleteById(RequestUserGetById) returns (Empty);
+  rpc UserExists(RequestUserGetById) returns (ResponseUserExists);
+  rpc UserChangePassword(RequestUserChangePassword) returns (Empty);
 }

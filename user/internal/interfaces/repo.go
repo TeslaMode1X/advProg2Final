@@ -10,4 +10,6 @@ type UserRepo interface {
 	UserRegisterRepo(user model.User) (uuid.UUID, error)
 	UserGetByIdRepo(id string) (*model.User, error)
 	UserDeleteByIdRepo(id string) error
+	UserExistsRepo(id string) (bool, error)
+	UserUpdatePasswordRepo(id, oldPassword, newPassword string) error
 }

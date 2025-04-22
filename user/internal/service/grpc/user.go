@@ -99,3 +99,25 @@ func (g *UserServiceGrpc) UserDeleteById(ctx context.Context, req *user.RequestU
 
 	return &empty, nil
 }
+
+func (g *UserServiceGrpc) UserExists(ctx context.Context, req *user.RequestUserGetById) (*user.ResponseUserExists, error) {
+	const op = "grpc.user.UserExists"
+
+	exists, err := g.userService.UserExistsService(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &user.ResponseUserExists{Exists: exists}, nil
+}
+
+func (g *UserServiceGrpc) UserChangePassword(ctx context.Context, req *user.RequestUserChangePassword) (*user.Empty, error) {
+	const op = "grpc.user.UserChangePassword"
+
+	err := g.userService.UserUpdatePasswordService(req.Id, req.OldPassword, req.NewPassword)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &user.Empty{}, nil
+}
