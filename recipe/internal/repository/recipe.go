@@ -38,7 +38,7 @@ func (r *RecipeRepo) RecipeCreateRepo(recipe model.Recipe) (string, error) {
 		UpdatedAt:     recipe.UpdatedAt,
 	}
 
-	if err := r.db.GetDB().Create(&recipeEntity).Error; err != nil {
+	if err = r.db.GetDB().Create(&recipeEntity).Error; err != nil {
 		log.Printf("%s: failed to create recipe: %v", op, err)
 		return "", fmt.Errorf("failed to create recipe: %w", err)
 	}
@@ -49,6 +49,29 @@ func (r *RecipeRepo) RecipeCreateRepo(recipe model.Recipe) (string, error) {
 
 func (r *RecipeRepo) RecipeUpdateRepo() {}
 
-func (r *RecipeRepo) RecipeListRepo() {}
+func (r *RecipeRepo) RecipeListRepo() ([]*model.Recipe, error) {
+	const op = "recipe.repository.RecipeListRepo"
+
+	var recipeList []*model.RecipeEntity
+
+	result := r.db.GetDB().Find(&recipeList)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to find recipe list: %w", result.Error)
+	}
+	var recipes []*model.Recipe
+	for _, entity := range recipeList {
+		recipe := &model.Recipe{
+			ID:          entity.ID,
+			AuthorID:    entity.AuthorID,
+			Title:       entity.Title,
+			Description: entity.Description,
+			CreatedAt:   entity.CreatedAt,
+			UpdatedAt:   entity.UpdatedAt,
+		}
+		recipes = append(recipes, recipe)
+	}
+
+	return recipes, nil
+}
 
 func (r *RecipeRepo) RecipeDeleteRepo() {}

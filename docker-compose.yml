@@ -54,7 +54,7 @@ services:
     env_file:
       - ./recipe/.env.recipe
     volumes:
-      - ./photo:/app/photo  # Add this volume mount
+      - ./photo:/app/photo
     depends_on:
       recipe_db:
         condition: service_healthy

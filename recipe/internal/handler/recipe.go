@@ -24,6 +24,14 @@ func NewRecipeHandler(serv interfaces.RecipeService) *RecipeHandler {
 }
 func (h *RecipeHandler) RecipeList(c *gin.Context) {
 	const op = "handler.recipe.RecipeList"
+
+	recipes, err := h.recipeService.RecipeListService()
+	if err != nil {
+		response.Response(c, http.StatusInternalServerError, op, err.Error())
+		return
+	}
+
+	response.Response(c, http.StatusOK, op, recipes)
 }
 
 func (h *RecipeHandler) RecipeCreate(c *gin.Context) {
@@ -59,12 +67,12 @@ func (h *RecipeHandler) RecipeCreate(c *gin.Context) {
 		dir := "../photo"
 		filepath := fmt.Sprintf("%s/%s", dir, filename)
 
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err = os.MkdirAll(dir, 0755); err != nil {
 			response.Response(c, http.StatusInternalServerError, op, gin.H{"error": "directory creation error"})
 			return
 		}
 
-		if err := c.SaveUploadedFile(file, filepath); err != nil {
+		if err = c.SaveUploadedFile(file, filepath); err != nil {
 			response.Response(c, http.StatusInternalServerError, op, gin.H{"error": "photo save error"})
 			return
 		}

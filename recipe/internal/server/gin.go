@@ -43,6 +43,7 @@ func (s *ginServer) initializeRecipeHandler() {
 	recipeRoutes := s.app.Group("/recipe")
 	{
 		recipeRoutes.POST("/create", recipeHandler.RecipeCreate)
+		recipeRoutes.GET("/list", recipeHandler.RecipeList)
 	}
 
 }

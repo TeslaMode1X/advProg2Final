@@ -27,9 +27,15 @@ func (s *RecipeService) RecipeCreateService(recipe model.Recipe) (string, error)
 	return id, nil
 }
 
-func (s *RecipeService) RecipeListService() {
-	//TODO implement me
-	panic("implement me")
+func (s *RecipeService) RecipeListService() ([]*model.Recipe, error) {
+	const op = "recipe.service.RecipeListService"
+
+	recipes, err := s.recipeRepo.RecipeListRepo()
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return recipes, nil
 }
 
 func (s *RecipeService) RecipeUpdateService() {
