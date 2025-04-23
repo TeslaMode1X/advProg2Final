@@ -10,5 +10,5 @@ COPY ./proto ./proto
 WORKDIR /app/api-gateway
 RUN go build -o api-gateway_service ./cmd/api-gateway/main.go
 
-EXPOSE 8081
+EXPOSE 8080
 CMD ["./api-gateway_service"]

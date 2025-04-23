@@ -15,6 +15,21 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  recipe_db:
+    container_name: recipe_db
+    image: postgres:15
+    restart: always
+    env_file:
+      - ./recipe/.env.recipe
+    ports:
+      - "5434:5432"
+    networks:
+      - final-network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   user:
     container_name: user_microservice
     build:
@@ -26,6 +41,22 @@ services:
       - ./user/.env.user
     depends_on:
       user_db:
+        condition: service_healthy
+    networks:
+      - final-network
+  recipe:
+    container_name: recipe_microservice
+    build:
+      context: .
+      dockerfile: ./recipe/Dockerfile
+    ports:
+      - "50052:50052"
+    env_file:
+      - ./recipe/.env.recipe
+    volumes:
+      - ./photo:/app/photo  # Add this volume mount
+    depends_on:
+      recipe_db:
         condition: service_healthy
     networks:
       - final-network

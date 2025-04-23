@@ -3,6 +3,9 @@ package main
 import (
 	"github.com/TeslaMode1X/advProg2Final/recipe/config"
 	dbInstance "github.com/TeslaMode1X/advProg2Final/recipe/internal/infrastructure/db"
+	"github.com/TeslaMode1X/advProg2Final/recipe/internal/server"
+	"log"
+	"os"
 )
 
 func main() {
@@ -12,5 +15,7 @@ func main() {
 
 	db.Migrate()
 
-	//l := log.New(os.Stdout, "recipe-rpc", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+	l := log.New(os.Stdout, "recipe-rpc", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+
+	server.NewGinServer(&cfg, db, l).Start()
 }

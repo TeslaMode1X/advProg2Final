@@ -27,3 +27,7 @@ type RecipeEntity struct {
 	CreatedAt     time.Time `gorm:"autoCreateTime"`
 	UpdatedAt     time.Time `gorm:"autoUpdateTime"`
 }
+
+func (r *RecipeEntity) TableName() string {
+	return "recipe"
+}
