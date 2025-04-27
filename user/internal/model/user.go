@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/TeslaMode1X/advProg2Final/user/internal/repository/dao"
 	ownErrors "github.com/TeslaMode1X/advProg2Final/user/pkg/errors"
 	"github.com/gofrs/uuid"
 	"time"
@@ -28,8 +29,8 @@ func (u *User) Validate() error {
 	return nil
 }
 
-func ToUserEntityFromUserDomain(u *User) *UserEntity {
-	return &UserEntity{
+func ToUserEntityFromUserDomain(u *User) *dao.UserEntity {
+	return &dao.UserEntity{
 		ID:        u.ID,
 		Username:  u.Username,
 		Password:  u.Password,
@@ -40,21 +41,7 @@ func ToUserEntityFromUserDomain(u *User) *UserEntity {
 	}
 }
 
-type UserEntity struct {
-	ID        uuid.UUID  `gorm:"type:uuid;primaryKey"`
-	Username  string     `gorm:"size:50;not null"`
-	Password  string     `gorm:"size:255;not null"`
-	Email     string     `gorm:"size:254;not null;unique"`
-	CreatedAt time.Time  `gorm:"autoCreateTime"`
-	UpdatedAt time.Time  `gorm:"autoUpdateTime"`
-	DeletedAt *time.Time `gorm:"index"`
-}
-
-func (u *UserEntity) TableName() string {
-	return "users"
-}
-
-func ToUserDomainFromEntity(ent *UserEntity) *User {
+func ToUserDomainFromEntity(ent *dao.UserEntity) *User {
 	return &User{
 		ID:        ent.ID,
 		Username:  ent.Username,

@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"github.com/TeslaMode1X/advProg2Final/user/internal/handler/dto"
 	handler "github.com/TeslaMode1X/advProg2Final/user/internal/handler/response"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/interfaces"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/model"
-	"github.com/TeslaMode1X/advProg2Final/user/internal/model/dto"
 	"github.com/TeslaMode1X/advProg2Final/user/pkg/crypto"
 	"github.com/TeslaMode1X/advProg2Final/user/pkg/security"
 	"github.com/gin-gonic/gin"

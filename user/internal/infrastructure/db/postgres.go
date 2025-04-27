@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/TeslaMode1X/advProg2Final/user/config"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/interfaces"
-	"github.com/TeslaMode1X/advProg2Final/user/internal/model"
+	"github.com/TeslaMode1X/advProg2Final/user/internal/repository/dao"
 	"github.com/gofrs/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -26,16 +26,16 @@ func (p *postgresDatabase) GetDB() *gorm.DB {
 }
 
 func (p *postgresDatabase) Migrate() {
-	if err := p.GetDB().Migrator().AutoMigrate(&model.UserEntity{}); err != nil {
+	if err := p.GetDB().Migrator().AutoMigrate(&dao.UserEntity{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
 	userUUID, _ := uuid.NewV4()
 
 	var count int64
-	p.GetDB().Model(&model.UserEntity{}).Count(&count)
+	p.GetDB().Model(&dao.UserEntity{}).Count(&count)
 	if count == 0 {
-		users := []model.UserEntity{
+		users := []dao.UserEntity{
 			{
 				ID:       userUUID,
 				Username: "admin",

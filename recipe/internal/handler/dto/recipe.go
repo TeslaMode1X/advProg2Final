@@ -25,3 +25,16 @@ func (r *RecipeRequest) Validate() error {
 
 	return nil
 }
+
+type RecipeResponse struct {
+	AuthorID    string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+type RecipeUpdateRequest struct {
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Photos      []string `json:"photos"`
+}

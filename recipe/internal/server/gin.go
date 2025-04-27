@@ -44,6 +44,9 @@ func (s *ginServer) initializeRecipeHandler() {
 	{
 		recipeRoutes.POST("/create", recipeHandler.RecipeCreate)
 		recipeRoutes.GET("/list", recipeHandler.RecipeList)
+		recipeRoutes.GET("/:id", recipeHandler.RecipeByID)
+		recipeRoutes.PUT("/update", recipeHandler.RecipeUpdate)
+		recipeRoutes.DELETE("/delete/:id", recipeHandler.RecipeDelete)
 	}
 
 }

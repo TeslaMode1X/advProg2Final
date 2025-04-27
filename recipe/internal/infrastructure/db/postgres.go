@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/TeslaMode1X/advProg2Final/recipe/config"
 	interfaces "github.com/TeslaMode1X/advProg2Final/recipe/internal/interface"
-	"github.com/TeslaMode1X/advProg2Final/recipe/internal/model"
+	"github.com/TeslaMode1X/advProg2Final/recipe/internal/repository/dao"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -25,7 +25,7 @@ func (p *postgresDatabase) GetDB() *gorm.DB {
 }
 
 func (p *postgresDatabase) Migrate() {
-	if err := p.DB.Migrator().AutoMigrate(&model.RecipeEntity{}); err != nil {
+	if err := p.DB.Migrator().AutoMigrate(&dao.RecipeEntity{}); err != nil {
 		log.Fatalf("error migrating database: %v", err)
 	}
 }

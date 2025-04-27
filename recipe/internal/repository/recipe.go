@@ -5,7 +5,11 @@ import (
 	"fmt"
 	interfaces "github.com/TeslaMode1X/advProg2Final/recipe/internal/interface"
 	"github.com/TeslaMode1X/advProg2Final/recipe/internal/model"
+	"github.com/TeslaMode1X/advProg2Final/recipe/internal/repository/dao"
+	"github.com/gofrs/uuid"
 	"log"
+	"os"
+	"time"
 )
 
 type RecipeRepo struct {
@@ -19,7 +23,7 @@ func NewRecipeRepo(db interfaces.Database) *RecipeRepo {
 }
 
 func (r *RecipeRepo) RecipeCreateRepo(recipe model.Recipe) (string, error) {
-	const op = "handler.recipe.RecipeCreate"
+	const op = "repository.recipe.RecipeCreateRepo"
 
 	photosJSON, err := json.Marshal(recipe.Photos)
 	if err != nil {
@@ -27,7 +31,7 @@ func (r *RecipeRepo) RecipeCreateRepo(recipe model.Recipe) (string, error) {
 		return "", fmt.Errorf("failed to marshal photos: %w", err)
 	}
 
-	recipeEntity := model.RecipeEntity{
+	recipeEntity := dao.RecipeEntity{
 		ID:            recipe.ID,
 		AuthorID:      recipe.AuthorID,
 		Title:         recipe.Title,
@@ -47,12 +51,90 @@ func (r *RecipeRepo) RecipeCreateRepo(recipe model.Recipe) (string, error) {
 	return idStr, nil
 }
 
-func (r *RecipeRepo) RecipeUpdateRepo() {}
+func (r *RecipeRepo) RecipeByIDRepo(id string) (*dao.RecipeEntity, error) {
+	const op = "repository.recipe.RecipeByIDRepo"
+
+	var recipeObject dao.RecipeEntity
+
+	result := r.db.GetDB().Where("id = ?", id).First(&recipeObject)
+	if result.Error != nil {
+		return nil, fmt.Errorf("%s: %w", op, result.Error)
+	}
+
+	return &recipeObject, nil
+}
+
+func (r *RecipeRepo) RecipeUpdateRepo(recipe model.Recipe) error {
+	const op = "repository.recipe.RecipeUpdateRepo"
+
+	var existingRecipe dao.RecipeEntity
+	if err := r.db.GetDB().Where("id = ?", recipe.ID).First(&existingRecipe).Error; err != nil {
+		return fmt.Errorf("%s: failed to find existing recipe: %w", op, err)
+	}
+
+	if recipe.Photos != nil {
+		if len(existingRecipe.Photos) > 0 {
+			var existingPhotos []string
+			if err := json.Unmarshal(existingRecipe.Photos, &existingPhotos); err != nil {
+				return fmt.Errorf("%s: failed to unmarshal existing photos: %w", op, err)
+			}
+
+			// Удаляем старые файлы
+			for _, path := range existingPhotos {
+				fullPath := fmt.Sprintf("../%s", path)
+				err := os.Remove(fullPath)
+				if err != nil && !os.IsNotExist(err) {
+					log.Printf("Failed to delete photo %s: %v", fullPath, err)
+				}
+			}
+		}
+
+		photosJSON, err := json.Marshal(recipe.Photos)
+		if err != nil {
+			return fmt.Errorf("%s: failed to marshal new photos: %w", op, err)
+		}
+
+		result := r.db.GetDB().Model(&dao.RecipeEntity{}).
+			Where("id = ?", recipe.ID).
+			Updates(map[string]interface{}{
+				"title":       recipe.Title,
+				"description": recipe.Description,
+				"photos":      photosJSON,
+				"updated_at":  time.Now(),
+			})
+
+		if result.Error != nil {
+			return fmt.Errorf("%s: failed to update recipe: %w", op, result.Error)
+		}
+
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("%s: recipe with ID %s not found", op, recipe.ID)
+		}
+	} else {
+		result := r.db.GetDB().Model(&dao.RecipeEntity{}).
+			Where("id = ?", recipe.ID).
+			Updates(map[string]interface{}{
+				"title":       recipe.Title,
+				"description": recipe.Description,
+				"updated_at":  time.Now(),
+			})
+
+		if result.Error != nil {
+			return fmt.Errorf("%s: failed to update recipe: %w", op, result.Error)
+		}
+
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("%s: recipe with ID %s not found", op, recipe.ID)
+		}
+	}
+
+	return nil
+}
 
 func (r *RecipeRepo) RecipeListRepo() ([]*model.Recipe, error) {
-	const op = "recipe.repository.RecipeListRepo"
+	const op = "repository.recipe.RecipeListRepo"
 
-	var recipeList []*model.RecipeEntity
+	var recipeList []*dao.RecipeEntity
 
 	result := r.db.GetDB().Find(&recipeList)
 	if result.Error != nil {
@@ -74,4 +156,20 @@ func (r *RecipeRepo) RecipeListRepo() ([]*model.Recipe, error) {
 	return recipes, nil
 }
 
-func (r *RecipeRepo) RecipeDeleteRepo() {}
+func (r *RecipeRepo) RecipeDeleteRepo(id string) error {
+	const op = "repository.recipe.RecipeDeleteRepo"
+
+	entity := dao.RecipeEntity{}
+	parsedID, err := uuid.FromString(id)
+	if err != nil {
+		return fmt.Errorf("%s: invalid UUID format: %w", op, err)
+	}
+	entity.ID = parsedID
+
+	result := r.db.GetDB().Delete(&entity)
+	if result.Error != nil {
+		return fmt.Errorf("%s: failed to delete entity: %w", op, result.Error)
+	}
+
+	return nil
+}
