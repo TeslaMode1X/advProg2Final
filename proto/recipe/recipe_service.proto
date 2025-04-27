@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package recipe;
+option go_package = "./recipe";
+
+message Empty {}
+
+message Recipe {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string photos = 4;
+}
+
+message RecipeByIDRequest {
+  string id = 1;
+}
+
+message RecipeByIDResponse {
+  Recipe recipe = 1;
+}
+
+message RecipeListResponse {
+  repeated Recipe recipes = 1;
+}
+
+message RecipeCreateRequest {
+  string author_id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string photos = 4;
+}
+
+message RecipeCreateResponse {
+  string id = 1;
+}
+
+message RecipeUpdateRequest {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string photos = 4;
+}
+
+message RecipeUpdateResponse {
+  string id = 1;
+}
+
+message RecipeDeleteRequest {
+  string id = 1;
+}
+
+message RecipeDeleteResponse {
+  string id = 1;
+}
+
+service RecipeService {
+  rpc RecipeList(Empty) returns(RecipeListResponse);
+  rpc RecipeByID(RecipeByIDRequest) returns(RecipeByIDResponse);
+  rpc RecipeCreate(RecipeCreateRequest) returns(RecipeCreateResponse);
+  rpc RecipeUpdate(RecipeUpdateRequest) returns(RecipeUpdateResponse);
+  rpc RecipeDelete(RecipeDeleteRequest) returns(RecipeDeleteResponse);
+}
