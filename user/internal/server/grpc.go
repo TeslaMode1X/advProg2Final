@@ -46,7 +46,7 @@ func (s *grpcServerObject) Start() {
 		s.log.Fatalf("Failed to listen on %s: %v", port, err)
 	}
 
-	s.log.Printf("Starting inventory gRPC server on %s", port)
+	s.log.Printf("Starting user gRPC server on %s", port)
 	if err = s.server.Serve(lis); err != nil {
 		s.log.Fatalf("Failed to serve: %v", err)
 	}
