@@ -19,7 +19,7 @@ type grpcServerObject struct {
 	log    *log.Logger
 }
 
-func NewGrpcServerObject(conf *config.Config, db interfaces.Database, log *log.Logger) interfaces.Server {
+func NewGrpcServer(conf *config.Config, db interfaces.Database, log *log.Logger) interfaces.Server {
 	recipeRepository := repository.NewRecipeRepo(db)
 	recipeService := service.NewRecipeService(recipeRepository)
 

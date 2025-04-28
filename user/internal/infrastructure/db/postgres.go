@@ -39,7 +39,7 @@ func (p *postgresDatabase) Migrate() {
 			{
 				ID:       userUUID,
 				Username: "admin",
-				Password: "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3", // 123
+				Password: "$2a$10$UzIKarUF/Xctup91UXKo.OjA6hxP3bnnE.3p6AMwe/0wMpcn1GAoG", // 12345678
 				Email:    "admin@test.com",
 			},
 		}

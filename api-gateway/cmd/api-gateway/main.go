@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	userConnection = "user:50051"
+	userConnection   = "user:50051"
+	recipeConnection = "recipe:50052"
 )
 
 func main() {
@@ -19,13 +20,19 @@ func main() {
 
 	err := load.LoadDotEnv()
 
-	userConn, err := grpc.NewClient(userConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	userConn, err := grpc.Dial(userConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Failed to connect to inventory: %v", err)
+		log.Fatalf("Failed to connect to user: %v", err)
 	}
 	defer userConn.Close()
 
-	gatewayHandler := handler.NewGatewayHandler(userConn)
+	recipeConn, err := grpc.Dial(recipeConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to connect to recipe: %v", err)
+	}
+	defer recipeConn.Close()
+
+	gatewayHandler := handler.NewGatewayHandler(userConn, recipeConn)
 
 	// USER THING
 	userGroup := r.Group("/user")
@@ -39,6 +46,19 @@ func main() {
 			protected.GET("/exists/:id", gatewayHandler.UserExists)
 			protected.DELETE("/:id", gatewayHandler.UserDeleteById)
 			protected.PUT("", gatewayHandler.UserChangePassword)
+		}
+	}
+
+	// RECIPE THING
+	recipeGroup := r.Group("/recipe")
+	{
+		recipeGroup.GET("/list", gatewayHandler.RecipeList)
+		recipeGroup.GET("/:id", gatewayHandler.RecipeByID)
+		protected := recipeGroup.Group("/", middleware.AuthRequired())
+		{
+			protected.POST("/create", gatewayHandler.RecipeCreate)
+			protected.PUT("/update", gatewayHandler.RecipeUpdate)
+			protected.DELETE("/delete/:id", gatewayHandler.RecipeDelete)
 		}
 	}
 

@@ -37,9 +37,10 @@ message RecipeCreateResponse {
 
 message RecipeUpdateRequest {
   string id = 1;
-  string title = 2;
-  string description = 3;
-  repeated string photos = 4;
+  string author_id = 2;
+  string title = 3;
+  string description = 4;
+  repeated string photos = 5;
 }
 
 message RecipeUpdateResponse {

@@ -2,22 +2,30 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"github.com/TeslaMode1X/advProg2Final/proto/gen/recipe"
 	"github.com/TeslaMode1X/advProg2Final/proto/gen/user"
 	"github.com/gofrs/uuid"
-
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"log"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type GatewayHandler struct {
-	userClient user.UserServiceClient
+	userClient   user.UserServiceClient
+	recipeClient recipe.RecipeServiceClient
 }
 
-func NewGatewayHandler(userConn *grpc.ClientConn) *GatewayHandler {
+func NewGatewayHandler(userConn, recipeConn *grpc.ClientConn) *GatewayHandler {
 	return &GatewayHandler{
-		userClient: user.NewUserServiceClient(userConn),
+		userClient:   user.NewUserServiceClient(userConn),
+		recipeClient: recipe.NewRecipeServiceClient(recipeConn),
 	}
 }
 
@@ -177,4 +185,236 @@ func (g *GatewayHandler) UserChangePassword(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
+}
+
+func (g *GatewayHandler) RecipeList(c *gin.Context) {
+	r := &recipe.Empty{}
+	recipeObjects, err := g.recipeClient.RecipeList(context.Background(), r)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"recipes": recipeObjects})
+}
+
+func (g *GatewayHandler) RecipeCreate(c *gin.Context) {
+	const op = "handler.gateway.RecipeCreate"
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "could not read multipart form"})
+		return
+	}
+
+	var title, description string
+	if len(form.Value["title"]) > 0 {
+		title = form.Value["title"][0]
+	}
+	if len(form.Value["description"]) > 0 {
+		description = form.Value["description"][0]
+	}
+
+	if title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "title is required"})
+		return
+	}
+
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	recipeID, err := uuid.NewV4()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	files := form.File["photos"]
+	var photoPaths []string
+	for _, file := range files {
+		filename := fmt.Sprintf("%s-%s", recipeID.String(), file.Filename)
+
+		dir := "/app/photo"
+		filepath := fmt.Sprintf("%s/%s", dir, filename)
+
+		cwd, _ := os.Getwd()
+		log.Printf("Current working directory: %s", cwd)
+
+		if err = os.MkdirAll(dir, 0755); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "directory creation error"})
+			return
+		}
+
+		if err = c.SaveUploadedFile(file, filepath); err != nil {
+			log.Printf("Error saving file: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "photo save error"})
+			return
+		}
+
+		photoPaths = append(photoPaths, fmt.Sprintf("photo/%s", filename))
+	}
+
+	req := &recipe.RecipeCreateRequest{
+		Title:       title,
+		Description: description,
+		Photos:      photoPaths,
+		AuthorId:    userID.String(),
+	}
+
+	id, err := g.recipeClient.RecipeCreate(context.Background(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"id": id})
+}
+
+func (g *GatewayHandler) RecipeByID(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+
+	req := &recipe.RecipeByIDRequest{
+		Id: id,
+	}
+
+	recipeObject, err := g.recipeClient.RecipeByID(context.Background(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"recipe": recipeObject})
+}
+
+func (g *GatewayHandler) RecipeUpdate(c *gin.Context) {
+	const op = "handler.gateway.RecipeUpdate"
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "could not read multipart form"})
+		return
+	}
+
+	if len(form.Value["id"]) == 0 || form.Value["id"][0] == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "recipe ID is required"})
+		return
+	}
+	recipeID := form.Value["id"][0]
+
+	idUUID := uuid.FromStringOrNil(recipeID)
+	if idUUID == uuid.Nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid recipe ID"})
+		return
+	}
+
+	var title, description string
+	if len(form.Value["title"]) > 0 {
+		title = form.Value["title"][0]
+	}
+	if len(form.Value["description"]) > 0 {
+		description = form.Value["description"][0]
+	}
+
+	if title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "title is required"})
+		return
+	}
+
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	var photoPaths []string
+	files := form.File["photos"]
+	if len(files) > 0 {
+		for _, file := range files {
+			filename := fmt.Sprintf("%s-%s", idUUID.String(), file.Filename)
+
+			dir := "/app/photo"
+			filepath := fmt.Sprintf("%s/%s", dir, filename)
+
+			if err = os.MkdirAll(dir, 0755); err != nil {
+				log.Printf("Error creating directory: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "directory creation error"})
+				return
+			}
+
+			if err = c.SaveUploadedFile(file, filepath); err != nil {
+				log.Printf("Error saving file: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "photo save error"})
+				return
+			}
+
+			photoPaths = append(photoPaths, fmt.Sprintf("photo/%s", filename))
+		}
+	}
+
+	req := &recipe.RecipeUpdateRequest{
+		Id:          recipeID,
+		Title:       title,
+		Description: description,
+		AuthorId:    userID.String(),
+	}
+
+	if len(photoPaths) > 0 {
+		req.Photos = photoPaths
+	} else {
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err = g.recipeClient.RecipeUpdate(ctx, req)
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "recipe not found"})
+			return
+		} else if status.Code(err) == codes.PermissionDenied {
+			c.JSON(http.StatusForbidden, gin.H{"error": "you don't have permission to update this recipe"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"id": recipeID})
+}
+
+func (g *GatewayHandler) RecipeDelete(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+
+	req := &recipe.RecipeDeleteRequest{Id: id}
+
+	_, err := g.recipeClient.RecipeDelete(context.Background(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "recipe deleted"})
 }

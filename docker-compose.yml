@@ -36,7 +36,7 @@ services:
       context: .
       dockerfile: ./user/Dockerfile
     ports:
-      - "50051:50051"
+      - ":50051"
     env_file:
       - ./user/.env.user
     depends_on:
@@ -50,7 +50,7 @@ services:
       context: .
       dockerfile: ./recipe/Dockerfile
     ports:
-      - "50052:50052"
+      - ":50052"
     env_file:
       - ./recipe/.env.recipe
     volumes:
@@ -62,6 +62,8 @@ services:
       - final-network
   api-gateway:
     container_name: api_gateway
+    volumes:
+      - ./photo:/app/photo
     build:
       context: .
       dockerfile: ./api-gateway/Dockerfile
@@ -69,9 +71,11 @@ services:
       - "8080:8080"
     depends_on:
       - user
+      - recipe
     networks:
       - final-network
 
 networks:
   final-network:
     driver: bridge
+
