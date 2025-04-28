@@ -408,7 +408,19 @@ func (g *GatewayHandler) RecipeDelete(c *gin.Context) {
 		return
 	}
 
-	req := &recipe.RecipeDeleteRequest{Id: id}
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	req := &recipe.RecipeDeleteRequest{Id: id, AuthorId: userID.String()}
 
 	_, err := g.recipeClient.RecipeDelete(context.Background(), req)
 	if err != nil {

@@ -199,7 +199,19 @@ func (h *RecipeHandler) RecipeDelete(c *gin.Context) {
 
 	idStr := c.Param("id")
 
-	err := h.recipeService.RecipeDeleteService(idStr)
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	err := h.recipeService.RecipeDeleteService(idStr, userID.String())
 	if err != nil {
 		response.Response(c, http.StatusInternalServerError, op, gin.H{"error": err.Error()})
 		return

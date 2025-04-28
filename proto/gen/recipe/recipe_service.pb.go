@@ -492,6 +492,7 @@ func (x *RecipeUpdateResponse) GetId() string {
 type RecipeDeleteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	AuthorId      string                 `protobuf:"bytes,2,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -529,6 +530,13 @@ func (*RecipeDeleteRequest) Descriptor() ([]byte, []int) {
 func (x *RecipeDeleteRequest) GetId() string {
 	if x != nil {
 		return x.Id
+	}
+	return ""
+}
+
+func (x *RecipeDeleteRequest) GetAuthorId() string {
+	if x != nil {
+		return x.AuthorId
 	}
 	return ""
 }
@@ -608,9 +616,10 @@ const file_proto_recipe_recipe_service_proto_rawDesc = "" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x16\n" +
 	"\x06photos\x18\x05 \x03(\tR\x06photos\"&\n" +
 	"\x14RecipeUpdateResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"%\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"B\n" +
 	"\x13RecipeDeleteRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"&\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
+	"\tauthor_id\x18\x02 \x01(\tR\bauthorId\"&\n" +
 	"\x14RecipeDeleteResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id2\xee\x02\n" +
 	"\rRecipeService\x127\n" +

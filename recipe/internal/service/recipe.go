@@ -6,6 +6,7 @@ import (
 	interfaces "github.com/TeslaMode1X/advProg2Final/recipe/internal/interface"
 	"github.com/TeslaMode1X/advProg2Final/recipe/internal/model"
 	"github.com/TeslaMode1X/advProg2Final/recipe/internal/repository/dao"
+	"github.com/TeslaMode1X/advProg2Final/recipe/pkg/errors"
 	"log"
 	"os"
 )
@@ -56,6 +57,15 @@ func (s *RecipeService) RecipeListService() ([]*model.Recipe, error) {
 func (s *RecipeService) RecipeUpdateService(recipe model.Recipe) error {
 	const op = "service.recipe.RecipeUpdateService"
 
+	exists, err := s.CheckUser(recipe.ID.String(), recipe.AuthorID.String())
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if !exists {
+		return fmt.Errorf("%s: %w", op, errors.ErrorWrongUserID)
+	}
+
 	recipeObject, err := s.recipeRepo.RecipeByIDRepo(recipe.ID.String())
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
@@ -74,8 +84,17 @@ func (s *RecipeService) RecipeUpdateService(recipe model.Recipe) error {
 	return nil
 }
 
-func (s *RecipeService) RecipeDeleteService(id string) error {
+func (s *RecipeService) RecipeDeleteService(id, userID string) error {
 	const op = "service.recipe.RecipeDeleteService"
+
+	exists, err := s.CheckUser(id, userID)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if !exists {
+		return fmt.Errorf("%s: %w", op, errors.ErrorWrongUserID)
+	}
 
 	recipeObject, err := s.recipeRepo.RecipeByIDRepo(id)
 	if err != nil {
@@ -93,6 +112,17 @@ func (s *RecipeService) RecipeDeleteService(id string) error {
 	}
 
 	return nil
+}
+
+func (s *RecipeService) CheckUser(recipeID, userID string) (bool, error) {
+	const op = "service.recipe.checkUser"
+
+	exists, err := s.recipeRepo.RecipeUserCheck(recipeID, userID)
+	if err != nil {
+		return false, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return exists, nil
 }
 
 func DeletePhotos(recipeObject dao.RecipeEntity) error {

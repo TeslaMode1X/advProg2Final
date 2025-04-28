@@ -10,5 +10,5 @@ type RecipeService interface {
 	RecipeByIDService(id string) (*dao.RecipeEntity, error)
 	RecipeCreateService(recipe model.Recipe) (string, error)
 	RecipeUpdateService(recipe model.Recipe) error
-	RecipeDeleteService(id string) error
+	RecipeDeleteService(id, userID string) error
 }

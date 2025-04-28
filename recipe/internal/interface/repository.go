@@ -11,4 +11,5 @@ type RecipeRepository interface {
 	RecipeCreateRepo(recipe model.Recipe) (string, error)
 	RecipeUpdateRepo(recipe model.Recipe) error
 	RecipeDeleteRepo(id string) error
+	RecipeUserCheck(recipeID, userID string) (bool, error)
 }

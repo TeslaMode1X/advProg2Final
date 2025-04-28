@@ -49,6 +49,7 @@ message RecipeUpdateResponse {
 
 message RecipeDeleteRequest {
   string id = 1;
+  string author_id = 2;
 }
 
 message RecipeDeleteResponse {

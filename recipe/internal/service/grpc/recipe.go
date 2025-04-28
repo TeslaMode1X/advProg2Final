@@ -90,8 +90,11 @@ func (r *RecipeServerGrpc) RecipeCreate(ctx context.Context, req *recipe.RecipeC
 func (r *RecipeServerGrpc) RecipeUpdate(ctx context.Context, req *recipe.RecipeUpdateRequest) (*recipe.RecipeUpdateResponse, error) {
 	recipeUUID, _ := uuid.FromString(req.Id)
 
+	authorIDString, _ := uuid.FromString(req.AuthorId)
+
 	recipeUpdateObject := &model.Recipe{
 		ID:          recipeUUID,
+		AuthorID:    authorIDString,
 		Title:       req.Title,
 		Description: req.Description,
 		Photos:      req.Photos,
@@ -108,7 +111,7 @@ func (r *RecipeServerGrpc) RecipeUpdate(ctx context.Context, req *recipe.RecipeU
 }
 
 func (r *RecipeServerGrpc) RecipeDelete(ctx context.Context, req *recipe.RecipeDeleteRequest) (*recipe.RecipeDeleteResponse, error) {
-	err := r.recipeService.RecipeDeleteService(req.Id)
+	err := r.recipeService.RecipeDeleteService(req.Id, req.AuthorId)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete the recipe: %s", err)
 	}

@@ -173,3 +173,18 @@ func (r *RecipeRepo) RecipeDeleteRepo(id string) error {
 
 	return nil
 }
+
+func (r *RecipeRepo) RecipeUserCheck(recipeID, userID string) (bool, error) {
+	const op = "repository.recipe.RecipeUserCheck"
+
+	var count int64
+	result := r.db.GetDB().Model(&dao.RecipeEntity{}).
+		Where("id = ? AND author_id = ?", recipeID, userID).
+		Count(&count)
+
+	if result.Error != nil {
+		return false, fmt.Errorf("%s: failed to check user's recipe: %w", op, result.Error)
+	}
+
+	return count > 0, nil
+}
