@@ -1,0 +1,7 @@
+package interfaces
+
+import "github.com/gin-gonic/gin"
+
+type ReviewHandler interface {
+	ReviewCreateHandler(c *gin.Context)
+}

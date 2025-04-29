@@ -9,7 +9,7 @@ type Review struct {
 	ID        uuid.UUID
 	RecipeID  uuid.UUID
 	UserID    uuid.UUID
-	Rating    int
+	Rating    float32
 	Comment   string
 	CreatedAt time.Time
 }
