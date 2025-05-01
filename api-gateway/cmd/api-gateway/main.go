@@ -13,6 +13,7 @@ import (
 var (
 	userConnection   = "user:50051"
 	recipeConnection = "recipe:50052"
+	reviewConnection = "review:50053"
 )
 
 func main() {
@@ -32,7 +33,13 @@ func main() {
 	}
 	defer recipeConn.Close()
 
-	gatewayHandler := handler.NewGatewayHandler(userConn, recipeConn)
+	reviewConn, err := grpc.Dial(reviewConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to connect to review: %v", err)
+	}
+	defer reviewConn.Close()
+
+	gatewayHandler := handler.NewGatewayHandler(userConn, recipeConn, reviewConn)
 
 	// USER THING
 	userGroup := r.Group("/user")
@@ -59,6 +66,18 @@ func main() {
 			protected.POST("/create", gatewayHandler.RecipeCreate)
 			protected.PUT("/update", gatewayHandler.RecipeUpdate)
 			protected.DELETE("/delete/:id", gatewayHandler.RecipeDelete)
+		}
+	}
+
+	reviewGroup := r.Group("/review")
+	{
+		reviewGroup.GET("/list", gatewayHandler.ReviewList)
+		reviewGroup.GET("/:id", gatewayHandler.ReviewById)
+		protected := reviewGroup.Group("/", middleware.AuthRequired())
+		{
+			protected.POST("/create", gatewayHandler.ReviewCreate)
+			protected.PUT("/update", gatewayHandler.ReviewUpdate)
+			protected.DELETE("/delete/:id", gatewayHandler.ReviewDelete)
 		}
 	}
 

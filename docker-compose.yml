@@ -81,7 +81,7 @@ services:
       context: .
       dockerfile: ./review/Dockerfile
     ports:
-      - "50053:50053"
+      - ":50053"
     env_file:
       - ./review/.env.review
     depends_on:

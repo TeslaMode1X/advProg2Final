@@ -56,10 +56,19 @@ message RecipeDeleteResponse {
   string id = 1;
 }
 
+message RecipeExistsRequest {
+  string recipe_id = 1;
+}
+
+message RecipeExistsResponse {
+  bool check = 1;
+}
+
 service RecipeService {
   rpc RecipeList(Empty) returns(RecipeListResponse);
   rpc RecipeByID(RecipeByIDRequest) returns(RecipeByIDResponse);
   rpc RecipeCreate(RecipeCreateRequest) returns(RecipeCreateResponse);
   rpc RecipeUpdate(RecipeUpdateRequest) returns(RecipeUpdateResponse);
   rpc RecipeDelete(RecipeDeleteRequest) returns(RecipeDeleteResponse);
+  rpc RecipeExists(RecipeExistsRequest) returns(RecipeExistsResponse);
 }

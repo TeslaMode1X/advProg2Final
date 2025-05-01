@@ -53,7 +53,16 @@ func (s *ReviewService) ReviewByIDService(id string) (*dao.ReviewEntity, error) 
 func (s *ReviewService) ReviewUpdateService(modelObject *model.Review) error {
 	const op = "service.review.ReviewUpdateService"
 
-	err := s.userRepo.ReviewUpdateRepo(modelObject)
+	truth, err := s.userRepo.ReviewUserCheck(modelObject.UserID.String(), modelObject.ID.String())
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if !truth {
+		return fmt.Errorf("%s: user is not the owner of the commentary %s", op, modelObject.UserID.String())
+	}
+
+	err = s.userRepo.ReviewUpdateRepo(modelObject)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}

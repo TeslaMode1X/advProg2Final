@@ -11,4 +11,5 @@ type RecipeService interface {
 	RecipeCreateService(recipe model.Recipe) (string, error)
 	RecipeUpdateService(recipe model.Recipe) error
 	RecipeDeleteService(id, userID string) error
+	RecipeExists(id string) (bool, error)
 }

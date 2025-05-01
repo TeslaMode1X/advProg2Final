@@ -188,3 +188,17 @@ func (r *RecipeRepo) RecipeUserCheck(recipeID, userID string) (bool, error) {
 
 	return count > 0, nil
 }
+
+func (r *RecipeRepo) RecipeExistsRepo(id string) (bool, error) {
+	const op = "repository.recipe.RecipeExistsRepo"
+
+	var count int64
+	result := r.db.GetDB().Model(&dao.RecipeEntity{}).
+		Where("id = ?", id).
+		Count(&count)
+	if result.Error != nil {
+		return false, fmt.Errorf("%s: failed to check recipe existence: %w", op, result.Error)
+	}
+
+	return count > 0, nil
+}

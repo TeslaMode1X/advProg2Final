@@ -125,6 +125,17 @@ func (s *RecipeService) CheckUser(recipeID, userID string) (bool, error) {
 	return exists, nil
 }
 
+func (s *RecipeService) RecipeExists(recipeID string) (bool, error) {
+	const op = "service.recipe.RecipeExists"
+
+	exists, err := s.recipeRepo.RecipeExistsRepo(recipeID)
+	if err != nil {
+		return false, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return exists, nil
+}
+
 func DeletePhotos(recipeObject dao.RecipeEntity) error {
 	var photoPaths []string
 	if err := json.Unmarshal(recipeObject.Photos, &photoPaths); err != nil {

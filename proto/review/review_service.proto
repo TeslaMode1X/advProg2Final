@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package review;
+option go_package = "./review";
+
+message Empty {}
+
+message Review {
+  string id = 1;
+  string recipe_id = 2;
+  string user_id = 3;
+  float rating = 4;
+  string comment = 5;
+}
+
+message ReviewCreateRequest {
+  string recipe_id = 1;
+  string user_id = 2;
+  float rating = 3;
+  string comment = 4;
+}
+
+message ReviewCreateResponse {
+  string id = 1;
+}
+
+message ReviewGetListResponse {
+  repeated Review reviews = 1;
+}
+
+message ReviewGetByIdRequest {
+  string id = 1;
+}
+
+message ReviewGetByIdResponse {
+  Review review = 1;
+}
+
+message ReviewUpdateRequest {
+  string id = 1;
+  string recipe_id = 2;
+  string user_id = 3;
+  float rating = 4;
+  string comment = 5;
+}
+
+message ReviewUpdateResponse {
+  Review review = 1;
+}
+
+message ReviewDeleteRequest {
+  string id = 1;
+}
+
+message ReviewDeleteResponse {
+  string status = 1;
+}
+
+service ReviewService {
+  rpc ReviewCreate(ReviewCreateRequest) returns(ReviewCreateResponse);
+  rpc ReviewGetList(Empty) returns(ReviewGetListResponse);
+  rpc ReviewGetById(ReviewGetByIdRequest) returns(ReviewGetByIdResponse);
+  rpc ReviewUpdate(ReviewUpdateRequest) returns(ReviewUpdateResponse);
+  rpc ReviewDelete(ReviewDeleteRequest) returns(ReviewDeleteResponse);
+}

@@ -95,3 +95,15 @@ func (r *ReviewRepo) ReviewDeleteRepo(id string) error {
 
 	return nil
 }
+
+func (r *ReviewRepo) ReviewUserCheck(userId, reviewId string) (bool, error) {
+	const op = "repository.review.ReviewUserCheck"
+
+	var dao dao.ReviewEntity
+	result := r.db.GetDB().Where("id = ? and user_id = ?", reviewId, userId).First(&dao)
+	if err := result.Error; err != nil {
+		return false, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return true, nil
+}

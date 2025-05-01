@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/TeslaMode1X/advProg2Final/proto/gen/recipe"
+	"github.com/TeslaMode1X/advProg2Final/proto/gen/review"
 	"github.com/TeslaMode1X/advProg2Final/proto/gen/user"
 	"github.com/gofrs/uuid"
 	"google.golang.org/grpc"
@@ -20,12 +21,14 @@ import (
 type GatewayHandler struct {
 	userClient   user.UserServiceClient
 	recipeClient recipe.RecipeServiceClient
+	reviewClient review.ReviewServiceClient
 }
 
-func NewGatewayHandler(userConn, recipeConn *grpc.ClientConn) *GatewayHandler {
+func NewGatewayHandler(userConn, recipeConn *grpc.ClientConn, reviewConn *grpc.ClientConn) *GatewayHandler {
 	return &GatewayHandler{
 		userClient:   user.NewUserServiceClient(userConn),
 		recipeClient: recipe.NewRecipeServiceClient(recipeConn),
+		reviewClient: review.NewReviewServiceClient(reviewConn),
 	}
 }
 
@@ -429,4 +432,141 @@ func (g *GatewayHandler) RecipeDelete(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": "recipe deleted"})
+}
+
+func (g *GatewayHandler) ReviewCreate(c *gin.Context) {
+	var req review.ReviewCreateRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	if req.RecipeId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "recipe_id is required"})
+		return
+	}
+
+	reqForExist := &recipe.RecipeExistsRequest{
+		RecipeId: req.RecipeId,
+	}
+
+	exist, err := g.recipeClient.RecipeExists(context.Background(), reqForExist)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !exist.Check {
+		c.JSON(http.StatusNotFound, gin.H{"error": "recipe not found"})
+		return
+	}
+
+	if req.Rating < 1 || req.Rating > 5 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "rating must be between 1 and 5"})
+		return
+	}
+
+	if req.Comment == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "comment is required"})
+		return
+	}
+
+	req.UserId = userID.String()
+
+	id, err := g.reviewClient.ReviewCreate(context.Background(), &req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"id": id})
+}
+
+func (g *GatewayHandler) ReviewList(c *gin.Context) {
+	var req review.Empty
+
+	objectList, err := g.reviewClient.ReviewGetList(context.Background(), &req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, objectList)
+}
+
+func (g *GatewayHandler) ReviewById(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+
+	object, err := g.reviewClient.ReviewGetById(context.Background(), &review.ReviewGetByIdRequest{Id: id})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, object)
+}
+
+func (g *GatewayHandler) ReviewUpdate(c *gin.Context) {
+	var req review.ReviewUpdateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not authenticated"})
+		return
+	}
+
+	userID, ok := userIDValue.(uuid.UUID)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user ID format"})
+		return
+	}
+
+	req.UserId = userID.String()
+
+	id, err := g.reviewClient.ReviewUpdate(context.Background(), &req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"id": id})
+}
+
+func (g *GatewayHandler) ReviewDelete(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+
+	req := &review.ReviewDeleteRequest{Id: id}
+
+	_, err := g.reviewClient.ReviewDelete(context.Background(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "review deleted"})
 }

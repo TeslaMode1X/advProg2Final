@@ -24,6 +24,7 @@ const (
 	RecipeService_RecipeCreate_FullMethodName = "/recipe.RecipeService/RecipeCreate"
 	RecipeService_RecipeUpdate_FullMethodName = "/recipe.RecipeService/RecipeUpdate"
 	RecipeService_RecipeDelete_FullMethodName = "/recipe.RecipeService/RecipeDelete"
+	RecipeService_RecipeExists_FullMethodName = "/recipe.RecipeService/RecipeExists"
 )
 
 // RecipeServiceClient is the client API for RecipeService service.
@@ -35,6 +36,7 @@ type RecipeServiceClient interface {
 	RecipeCreate(ctx context.Context, in *RecipeCreateRequest, opts ...grpc.CallOption) (*RecipeCreateResponse, error)
 	RecipeUpdate(ctx context.Context, in *RecipeUpdateRequest, opts ...grpc.CallOption) (*RecipeUpdateResponse, error)
 	RecipeDelete(ctx context.Context, in *RecipeDeleteRequest, opts ...grpc.CallOption) (*RecipeDeleteResponse, error)
+	RecipeExists(ctx context.Context, in *RecipeExistsRequest, opts ...grpc.CallOption) (*RecipeExistsResponse, error)
 }
 
 type recipeServiceClient struct {
@@ -95,6 +97,16 @@ func (c *recipeServiceClient) RecipeDelete(ctx context.Context, in *RecipeDelete
 	return out, nil
 }
 
+func (c *recipeServiceClient) RecipeExists(ctx context.Context, in *RecipeExistsRequest, opts ...grpc.CallOption) (*RecipeExistsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RecipeExistsResponse)
+	err := c.cc.Invoke(ctx, RecipeService_RecipeExists_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RecipeServiceServer is the server API for RecipeService service.
 // All implementations must embed UnimplementedRecipeServiceServer
 // for forward compatibility.
@@ -104,6 +116,7 @@ type RecipeServiceServer interface {
 	RecipeCreate(context.Context, *RecipeCreateRequest) (*RecipeCreateResponse, error)
 	RecipeUpdate(context.Context, *RecipeUpdateRequest) (*RecipeUpdateResponse, error)
 	RecipeDelete(context.Context, *RecipeDeleteRequest) (*RecipeDeleteResponse, error)
+	RecipeExists(context.Context, *RecipeExistsRequest) (*RecipeExistsResponse, error)
 	mustEmbedUnimplementedRecipeServiceServer()
 }
 
@@ -128,6 +141,9 @@ func (UnimplementedRecipeServiceServer) RecipeUpdate(context.Context, *RecipeUpd
 }
 func (UnimplementedRecipeServiceServer) RecipeDelete(context.Context, *RecipeDeleteRequest) (*RecipeDeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecipeDelete not implemented")
+}
+func (UnimplementedRecipeServiceServer) RecipeExists(context.Context, *RecipeExistsRequest) (*RecipeExistsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecipeExists not implemented")
 }
 func (UnimplementedRecipeServiceServer) mustEmbedUnimplementedRecipeServiceServer() {}
 func (UnimplementedRecipeServiceServer) testEmbeddedByValue()                       {}
@@ -240,6 +256,24 @@ func _RecipeService_RecipeDelete_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RecipeService_RecipeExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecipeExistsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecipeServiceServer).RecipeExists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RecipeService_RecipeExists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecipeServiceServer).RecipeExists(ctx, req.(*RecipeExistsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RecipeService_ServiceDesc is the grpc.ServiceDesc for RecipeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -266,6 +300,10 @@ var RecipeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RecipeDelete",
 			Handler:    _RecipeService_RecipeDelete_Handler,
+		},
+		{
+			MethodName: "RecipeExists",
+			Handler:    _RecipeService_RecipeExists_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

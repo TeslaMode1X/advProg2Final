@@ -120,3 +120,14 @@ func (r *RecipeServerGrpc) RecipeDelete(ctx context.Context, req *recipe.RecipeD
 		Id: req.Id,
 	}, nil
 }
+
+func (r *RecipeServerGrpc) RecipeExists(ctx context.Context, req *recipe.RecipeExistsRequest) (*recipe.RecipeExistsResponse, error) {
+	exists, err := r.recipeService.RecipeExists(req.RecipeId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to check recipe existence: %s", err)
+	}
+
+	return &recipe.RecipeExistsResponse{
+		Check: exists,
+	}, nil
+}

@@ -11,4 +11,5 @@ type ReviewRepository interface {
 	ReviewByIDRepo(id string) (*dao.ReviewEntity, error)
 	ReviewUpdateRepo(model *model.Review) error
 	ReviewDeleteRepo(id string) error
+	ReviewUserCheck(userId, reviewId string) (bool, error)
 }
