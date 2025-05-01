@@ -69,6 +69,7 @@ func main() {
 		}
 	}
 
+	// REVIEW THING
 	reviewGroup := r.Group("/review")
 	{
 		reviewGroup.GET("/list", gatewayHandler.ReviewList)
