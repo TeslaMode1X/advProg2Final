@@ -8,4 +8,7 @@ import (
 type ReviewRepository interface {
 	ReviewCreateRepo(model *model.Review) (string, error)
 	ReviewListRepo() ([]*dao.ReviewEntity, error)
+	ReviewByIDRepo(id string) (*dao.ReviewEntity, error)
+	ReviewUpdateRepo(model *model.Review) error
+	ReviewDeleteRepo(id string) error
 }

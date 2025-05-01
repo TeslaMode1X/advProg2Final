@@ -34,7 +34,29 @@ func (r *ReviewCreateRequest) Validate() error {
 	return nil
 }
 
-func FromDTO(modelObject ReviewCreateRequest) *model.Review {
+type ReviewUpdateRequest struct {
+	ID       string  `json:"id"`
+	UserID   string  `json:"userId"`
+	RecipeID string  `json:"recipeId"`
+	Rating   float32 `json:"rating"`
+	Comment  string  `json:"comment"`
+}
+
+func ConvertUpdateRequestToModel(modelObject ReviewUpdateRequest) *model.Review {
+	recipeUUID, _ := uuid.FromString(modelObject.RecipeID)
+	userUUID, _ := uuid.FromString(modelObject.UserID)
+	idUUID, _ := uuid.FromString(modelObject.ID)
+
+	return &model.Review{
+		ID:       idUUID,
+		RecipeID: recipeUUID,
+		UserID:   userUUID,
+		Rating:   modelObject.Rating,
+		Comment:  modelObject.Comment,
+	}
+}
+
+func ConvertCreateRequestToModel(modelObject ReviewCreateRequest) *model.Review {
 	recipeUUID, _ := uuid.FromString(modelObject.RecipeID)
 	userUUID, _ := uuid.FromString(modelObject.UserID)
 
@@ -46,7 +68,7 @@ func FromDTO(modelObject ReviewCreateRequest) *model.Review {
 	}
 }
 
-func ToDTO(reviews []*dao.ReviewEntity) []*ReviewCreateRequest {
+func ConvertEntitiesToDTOs(reviews []*dao.ReviewEntity) []*ReviewCreateRequest {
 	var list []*ReviewCreateRequest
 	for _, review := range reviews {
 		var object ReviewCreateRequest
@@ -59,4 +81,13 @@ func ToDTO(reviews []*dao.ReviewEntity) []*ReviewCreateRequest {
 	}
 
 	return list
+}
+
+func ConvertEntityToDTO(review dao.ReviewEntity) *ReviewCreateRequest {
+	return &ReviewCreateRequest{
+		RecipeID: review.RecipeID.String(),
+		UserID:   review.UserID.String(),
+		Rating:   review.Rating,
+		Comment:  review.Comment,
+	}
 }

@@ -33,7 +33,7 @@ func (h *ReviewHandler) ReviewCreateHandler(c *gin.Context) {
 		return
 	}
 
-	modelObj := dto.FromDTO(req)
+	modelObj := dto.ConvertCreateRequestToModel(req)
 
 	id, err := h.userService.ReviewCreateService(modelObj)
 	if err != nil {
@@ -53,7 +53,57 @@ func (h *ReviewHandler) ReviewListHandler(c *gin.Context) {
 		return
 	}
 
-	returnList := dto.ToDTO(list)
+	returnList := dto.ConvertEntitiesToDTOs(list)
 
 	response.Response(c, http.StatusOK, op, gin.H{"reviews": returnList})
+}
+
+func (h *ReviewHandler) ReviewByIDHandler(c *gin.Context) {
+	const op = "handler.review.ReviewByIDHandler"
+
+	id, _ := c.Params.Get("id")
+
+	object, err := h.userService.ReviewByIDService(id)
+	if err != nil {
+		response.Response(c, http.StatusInternalServerError, op, err.Error())
+		return
+	}
+
+	returnObject := dto.ConvertEntityToDTO(*object)
+
+	response.Response(c, http.StatusOK, op, returnObject)
+}
+
+func (h *ReviewHandler) ReviewUpdateHandler(c *gin.Context) {
+	const op = "handler.review.ReviewUpdateHandler"
+
+	var req dto.ReviewUpdateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Response(c, http.StatusInternalServerError, op, err.Error())
+		return
+	}
+
+	object := dto.ConvertUpdateRequestToModel(req)
+
+	err := h.userService.ReviewUpdateService(object)
+	if err != nil {
+		response.Response(c, http.StatusInternalServerError, op, err.Error())
+		return
+	}
+
+	response.Response(c, http.StatusOK, op, object)
+}
+
+func (h *ReviewHandler) ReviewDeleteHandler(c *gin.Context) {
+	const op = "handler.review.ReviewDeleteHandler"
+
+	id, _ := c.Params.Get("id")
+
+	err := h.userService.ReviewDeleteService(id)
+	if err != nil {
+		response.Response(c, http.StatusInternalServerError, op, err.Error())
+		return
+	}
+
+	response.Response(c, http.StatusOK, op, gin.H{"status": "successfully deleted"})
 }

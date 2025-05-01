@@ -38,3 +38,36 @@ func (s *ReviewService) ReviewListService() ([]*dao.ReviewEntity, error) {
 
 	return list, nil
 }
+
+func (s *ReviewService) ReviewByIDService(id string) (*dao.ReviewEntity, error) {
+	const op = "service.review.ReviewByIDService"
+
+	object, err := s.userRepo.ReviewByIDRepo(id)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return object, nil
+}
+
+func (s *ReviewService) ReviewUpdateService(modelObject *model.Review) error {
+	const op = "service.review.ReviewUpdateService"
+
+	err := s.userRepo.ReviewUpdateRepo(modelObject)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}
+
+func (s *ReviewService) ReviewDeleteService(id string) error {
+	const op = "service.review.ReviewDeleteService"
+
+	err := s.userRepo.ReviewDeleteRepo(id)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}

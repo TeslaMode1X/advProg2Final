@@ -44,6 +44,9 @@ func (s *ginServer) initializeReviewHandler() {
 	{
 		reviewGroup.POST("/create", reviewHandler.ReviewCreateHandler)
 		reviewGroup.GET("/list", reviewHandler.ReviewListHandler)
+		reviewGroup.GET("/:id", reviewHandler.ReviewByIDHandler)
+		reviewGroup.PUT("/update", reviewHandler.ReviewUpdateHandler)
+		reviewGroup.DELETE("/delete/:id", reviewHandler.ReviewDeleteHandler)
 	}
 }
 
