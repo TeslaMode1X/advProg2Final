@@ -43,6 +43,7 @@ func (s *ginServer) initializeReviewHandler() {
 	reviewGroup := s.app.Group("/review")
 	{
 		reviewGroup.POST("/create", reviewHandler.ReviewCreateHandler)
+		reviewGroup.GET("/list", reviewHandler.ReviewListHandler)
 	}
 }
 

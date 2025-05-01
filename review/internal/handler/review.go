@@ -27,6 +27,12 @@ func (h *ReviewHandler) ReviewCreateHandler(c *gin.Context) {
 		return
 	}
 
+	err := req.Validate()
+	if err != nil {
+		response.Response(c, http.StatusBadRequest, op, err.Error())
+		return
+	}
+
 	modelObj := dto.FromDTO(req)
 
 	id, err := h.userService.ReviewCreateService(modelObj)
@@ -36,4 +42,18 @@ func (h *ReviewHandler) ReviewCreateHandler(c *gin.Context) {
 	}
 
 	response.Response(c, http.StatusOK, op, gin.H{"id": id})
+}
+
+func (h *ReviewHandler) ReviewListHandler(c *gin.Context) {
+	const op = "handler.review.ReviewListHandler"
+
+	list, err := h.userService.ReviewListService()
+	if err != nil {
+		response.Response(c, http.StatusInternalServerError, op, err.Error())
+		return
+	}
+
+	returnList := dto.ToDTO(list)
+
+	response.Response(c, http.StatusOK, op, gin.H{"reviews": returnList})
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/user/internal/handler/dto"
 	handler "github.com/TeslaMode1X/advProg2Final/user/internal/handler/response"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/interfaces"
-	"github.com/TeslaMode1X/advProg2Final/user/internal/model"
 	"github.com/TeslaMode1X/advProg2Final/user/pkg/crypto"
 	"github.com/TeslaMode1X/advProg2Final/user/pkg/security"
 	"github.com/gin-gonic/gin"
@@ -36,13 +35,11 @@ func (h *UserHandler) UserRegister(c *gin.Context) {
 		return
 	}
 
-	user := model.User{
-		Username: req.Username,
-		Password: hashedPassword,
-		Email:    req.Email,
-	}
+	req.Password = hashedPassword
 
-	id, err := h.userService.UserRegisterService(user)
+	user := dto.FromDTO(req)
+
+	id, err := h.userService.UserRegisterService(*user)
 	if err != nil {
 		handler.Response(c, http.StatusInternalServerError, op, err.Error())
 		return
