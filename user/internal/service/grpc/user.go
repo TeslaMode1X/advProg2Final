@@ -6,6 +6,7 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/user/internal/interfaces"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/model"
 	"github.com/TeslaMode1X/advProg2Final/user/pkg/crypto"
+	"github.com/TeslaMode1X/advProg2Final/user/pkg/nats/producer"
 	"github.com/TeslaMode1X/advProg2Final/user/pkg/security"
 	_ "github.com/gofrs/uuid"
 	"google.golang.org/grpc/codes"
@@ -15,11 +16,13 @@ import (
 type UserServiceGrpc struct {
 	user.UnimplementedUserServiceServer
 	userService interfaces.UserService
+	producer    *producer.UserProducer
 }
 
-func NewUserServiceGrpc(userService interfaces.UserService) *UserServiceGrpc {
+func NewUserServiceGrpc(userService interfaces.UserService, userProducer *producer.UserProducer) *UserServiceGrpc {
 	return &UserServiceGrpc{
 		userService: userService,
+		producer:    userProducer,
 	}
 }
 
@@ -66,6 +69,11 @@ func (g *UserServiceGrpc) UserRegistration(ctx context.Context, req *user.Reques
 
 	id, err := g.userService.UserRegisterService(userModel)
 	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	// SENDING user objects via NATS
+	if err = g.producer.PublishUserCreated(ctx, model.UserNats{Email: userModel.Email}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 

@@ -15,3 +15,7 @@ type Recipe struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
+
+type RecipeNats struct {
+	AuthorID uuid.UUID
+}

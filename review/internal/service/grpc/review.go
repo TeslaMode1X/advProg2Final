@@ -5,17 +5,20 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/proto/gen/review"
 	interfaces "github.com/TeslaMode1X/advProg2Final/review/internal/interface"
 	"github.com/TeslaMode1X/advProg2Final/review/internal/model"
+	"github.com/TeslaMode1X/advProg2Final/review/pkg/nats/producer"
 	"github.com/gofrs/uuid"
 )
 
 type ReviewServerGrpc struct {
 	review.UnimplementedReviewServiceServer
-	reviewService interfaces.ReviewService
+	reviewService  interfaces.ReviewService
+	reviewProducer *producer.ReviewProducer
 }
 
-func NewReviewServerGrpc(s interfaces.ReviewService) *ReviewServerGrpc {
+func NewReviewServerGrpc(s interfaces.ReviewService, reviewProducer *producer.ReviewProducer) *ReviewServerGrpc {
 	return &ReviewServerGrpc{
-		reviewService: s,
+		reviewService:  s,
+		reviewProducer: reviewProducer,
 	}
 }
 
@@ -32,6 +35,14 @@ func (r *ReviewServerGrpc) ReviewCreate(ctx context.Context, req *review.ReviewC
 
 	id, err := r.reviewService.ReviewCreateService(reviewObject)
 	if err != nil {
+		return nil, err
+	}
+
+	if err = r.reviewProducer.PublishReviewCreated(ctx, model.ReviewNats{
+		AuthorID: reviewObject.UserID,
+		RecipeID: reviewObject.RecipeID,
+		Rating:   reviewObject.Rating,
+	}); err != nil {
 		return nil, err
 	}
 

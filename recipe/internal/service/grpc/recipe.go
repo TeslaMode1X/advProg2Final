@@ -6,6 +6,7 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/proto/gen/recipe"
 	interfaces "github.com/TeslaMode1X/advProg2Final/recipe/internal/interface"
 	"github.com/TeslaMode1X/advProg2Final/recipe/internal/model"
+	"github.com/TeslaMode1X/advProg2Final/recipe/pkg/nats/producer"
 	"github.com/gofrs/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -13,12 +14,14 @@ import (
 
 type RecipeServerGrpc struct {
 	recipe.UnimplementedRecipeServiceServer
-	recipeService interfaces.RecipeService
+	recipeService  interfaces.RecipeService
+	recipeProducer *producer.RecipeProducer
 }
 
-func NewRecipeServerGrpc(s interfaces.RecipeService) *RecipeServerGrpc {
+func NewRecipeServerGrpc(s interfaces.RecipeService, recipeProducer *producer.RecipeProducer) *RecipeServerGrpc {
 	return &RecipeServerGrpc{
-		recipeService: s,
+		recipeService:  s,
+		recipeProducer: recipeProducer,
 	}
 }
 
@@ -80,6 +83,10 @@ func (r *RecipeServerGrpc) RecipeCreate(ctx context.Context, req *recipe.RecipeC
 	id, err := r.recipeService.RecipeCreateService(*recipeCreate)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create the reciep: %s", err)
+	}
+
+	if err = r.recipeProducer.PublishRecipeCreated(ctx, model.RecipeNats{AuthorID: recipeCreate.AuthorID}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to publish the recipe: %s", err)
 	}
 
 	return &recipe.RecipeCreateResponse{

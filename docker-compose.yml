@@ -1,5 +1,19 @@
-name: finalissimo
+name: finalissima
 services:
+  nats:
+    container_name: nats_service
+    image: nats:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    networks:
+      - final-network
+    healthcheck:
+      test: [ "CMD", "/nats-server", "--help" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
   user_db:
     container_name: users_db
     image: postgres:15
@@ -101,6 +115,7 @@ services:
     depends_on:
       - user
       - recipe
+      - nats
     networks:
       - final-network
 

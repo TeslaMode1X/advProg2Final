@@ -13,3 +13,9 @@ type Review struct {
 	Comment   string
 	CreatedAt time.Time
 }
+
+type ReviewNats struct {
+	AuthorID uuid.UUID
+	RecipeID uuid.UUID
+	Rating   float32
+}

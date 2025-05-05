@@ -133,6 +133,66 @@ func (x *Review) GetComment() string {
 	return ""
 }
 
+type ReviewNats struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AuthorId      string                 `protobuf:"bytes,1,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
+	RecipeId      string                 `protobuf:"bytes,2,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
+	Rating        float32                `protobuf:"fixed32,3,opt,name=rating,proto3" json:"rating,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewNats) Reset() {
+	*x = ReviewNats{}
+	mi := &file_proto_review_review_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewNats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewNats) ProtoMessage() {}
+
+func (x *ReviewNats) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_review_review_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewNats.ProtoReflect.Descriptor instead.
+func (*ReviewNats) Descriptor() ([]byte, []int) {
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ReviewNats) GetAuthorId() string {
+	if x != nil {
+		return x.AuthorId
+	}
+	return ""
+}
+
+func (x *ReviewNats) GetRecipeId() string {
+	if x != nil {
+		return x.RecipeId
+	}
+	return ""
+}
+
+func (x *ReviewNats) GetRating() float32 {
+	if x != nil {
+		return x.Rating
+	}
+	return 0
+}
+
 type ReviewCreateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RecipeId      string                 `protobuf:"bytes,1,opt,name=recipe_id,json=recipeId,proto3" json:"recipe_id,omitempty"`
@@ -145,7 +205,7 @@ type ReviewCreateRequest struct {
 
 func (x *ReviewCreateRequest) Reset() {
 	*x = ReviewCreateRequest{}
-	mi := &file_proto_review_review_service_proto_msgTypes[2]
+	mi := &file_proto_review_review_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -157,7 +217,7 @@ func (x *ReviewCreateRequest) String() string {
 func (*ReviewCreateRequest) ProtoMessage() {}
 
 func (x *ReviewCreateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[2]
+	mi := &file_proto_review_review_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -170,7 +230,7 @@ func (x *ReviewCreateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewCreateRequest.ProtoReflect.Descriptor instead.
 func (*ReviewCreateRequest) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{2}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ReviewCreateRequest) GetRecipeId() string {
@@ -210,7 +270,7 @@ type ReviewCreateResponse struct {
 
 func (x *ReviewCreateResponse) Reset() {
 	*x = ReviewCreateResponse{}
-	mi := &file_proto_review_review_service_proto_msgTypes[3]
+	mi := &file_proto_review_review_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -222,7 +282,7 @@ func (x *ReviewCreateResponse) String() string {
 func (*ReviewCreateResponse) ProtoMessage() {}
 
 func (x *ReviewCreateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[3]
+	mi := &file_proto_review_review_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -235,7 +295,7 @@ func (x *ReviewCreateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewCreateResponse.ProtoReflect.Descriptor instead.
 func (*ReviewCreateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{3}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ReviewCreateResponse) GetId() string {
@@ -254,7 +314,7 @@ type ReviewGetListResponse struct {
 
 func (x *ReviewGetListResponse) Reset() {
 	*x = ReviewGetListResponse{}
-	mi := &file_proto_review_review_service_proto_msgTypes[4]
+	mi := &file_proto_review_review_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -266,7 +326,7 @@ func (x *ReviewGetListResponse) String() string {
 func (*ReviewGetListResponse) ProtoMessage() {}
 
 func (x *ReviewGetListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[4]
+	mi := &file_proto_review_review_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -279,7 +339,7 @@ func (x *ReviewGetListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewGetListResponse.ProtoReflect.Descriptor instead.
 func (*ReviewGetListResponse) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{4}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ReviewGetListResponse) GetReviews() []*Review {
@@ -298,7 +358,7 @@ type ReviewGetByIdRequest struct {
 
 func (x *ReviewGetByIdRequest) Reset() {
 	*x = ReviewGetByIdRequest{}
-	mi := &file_proto_review_review_service_proto_msgTypes[5]
+	mi := &file_proto_review_review_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -310,7 +370,7 @@ func (x *ReviewGetByIdRequest) String() string {
 func (*ReviewGetByIdRequest) ProtoMessage() {}
 
 func (x *ReviewGetByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[5]
+	mi := &file_proto_review_review_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -323,7 +383,7 @@ func (x *ReviewGetByIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewGetByIdRequest.ProtoReflect.Descriptor instead.
 func (*ReviewGetByIdRequest) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{5}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ReviewGetByIdRequest) GetId() string {
@@ -342,7 +402,7 @@ type ReviewGetByIdResponse struct {
 
 func (x *ReviewGetByIdResponse) Reset() {
 	*x = ReviewGetByIdResponse{}
-	mi := &file_proto_review_review_service_proto_msgTypes[6]
+	mi := &file_proto_review_review_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -354,7 +414,7 @@ func (x *ReviewGetByIdResponse) String() string {
 func (*ReviewGetByIdResponse) ProtoMessage() {}
 
 func (x *ReviewGetByIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[6]
+	mi := &file_proto_review_review_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -367,7 +427,7 @@ func (x *ReviewGetByIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewGetByIdResponse.ProtoReflect.Descriptor instead.
 func (*ReviewGetByIdResponse) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{6}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ReviewGetByIdResponse) GetReview() *Review {
@@ -390,7 +450,7 @@ type ReviewUpdateRequest struct {
 
 func (x *ReviewUpdateRequest) Reset() {
 	*x = ReviewUpdateRequest{}
-	mi := &file_proto_review_review_service_proto_msgTypes[7]
+	mi := &file_proto_review_review_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -402,7 +462,7 @@ func (x *ReviewUpdateRequest) String() string {
 func (*ReviewUpdateRequest) ProtoMessage() {}
 
 func (x *ReviewUpdateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[7]
+	mi := &file_proto_review_review_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -415,7 +475,7 @@ func (x *ReviewUpdateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewUpdateRequest.ProtoReflect.Descriptor instead.
 func (*ReviewUpdateRequest) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{7}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ReviewUpdateRequest) GetId() string {
@@ -462,7 +522,7 @@ type ReviewUpdateResponse struct {
 
 func (x *ReviewUpdateResponse) Reset() {
 	*x = ReviewUpdateResponse{}
-	mi := &file_proto_review_review_service_proto_msgTypes[8]
+	mi := &file_proto_review_review_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -474,7 +534,7 @@ func (x *ReviewUpdateResponse) String() string {
 func (*ReviewUpdateResponse) ProtoMessage() {}
 
 func (x *ReviewUpdateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[8]
+	mi := &file_proto_review_review_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -487,7 +547,7 @@ func (x *ReviewUpdateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewUpdateResponse.ProtoReflect.Descriptor instead.
 func (*ReviewUpdateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{8}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ReviewUpdateResponse) GetReview() *Review {
@@ -506,7 +566,7 @@ type ReviewDeleteRequest struct {
 
 func (x *ReviewDeleteRequest) Reset() {
 	*x = ReviewDeleteRequest{}
-	mi := &file_proto_review_review_service_proto_msgTypes[9]
+	mi := &file_proto_review_review_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -518,7 +578,7 @@ func (x *ReviewDeleteRequest) String() string {
 func (*ReviewDeleteRequest) ProtoMessage() {}
 
 func (x *ReviewDeleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[9]
+	mi := &file_proto_review_review_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -531,7 +591,7 @@ func (x *ReviewDeleteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewDeleteRequest.ProtoReflect.Descriptor instead.
 func (*ReviewDeleteRequest) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{9}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ReviewDeleteRequest) GetId() string {
@@ -550,7 +610,7 @@ type ReviewDeleteResponse struct {
 
 func (x *ReviewDeleteResponse) Reset() {
 	*x = ReviewDeleteResponse{}
-	mi := &file_proto_review_review_service_proto_msgTypes[10]
+	mi := &file_proto_review_review_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -562,7 +622,7 @@ func (x *ReviewDeleteResponse) String() string {
 func (*ReviewDeleteResponse) ProtoMessage() {}
 
 func (x *ReviewDeleteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_review_review_service_proto_msgTypes[10]
+	mi := &file_proto_review_review_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -575,7 +635,7 @@ func (x *ReviewDeleteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewDeleteResponse.ProtoReflect.Descriptor instead.
 func (*ReviewDeleteResponse) Descriptor() ([]byte, []int) {
-	return file_proto_review_review_service_proto_rawDescGZIP(), []int{10}
+	return file_proto_review_review_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ReviewDeleteResponse) GetStatus() string {
@@ -596,7 +656,12 @@ const file_proto_review_review_service_proto_rawDesc = "" +
 	"\trecipe_id\x18\x02 \x01(\tR\brecipeId\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x16\n" +
 	"\x06rating\x18\x04 \x01(\x02R\x06rating\x12\x18\n" +
-	"\acomment\x18\x05 \x01(\tR\acomment\"}\n" +
+	"\acomment\x18\x05 \x01(\tR\acomment\"^\n" +
+	"\n" +
+	"ReviewNats\x12\x1b\n" +
+	"\tauthor_id\x18\x01 \x01(\tR\bauthorId\x12\x1b\n" +
+	"\trecipe_id\x18\x02 \x01(\tR\brecipeId\x12\x16\n" +
+	"\x06rating\x18\x03 \x01(\x02R\x06rating\"}\n" +
 	"\x13ReviewCreateRequest\x12\x1b\n" +
 	"\trecipe_id\x18\x01 \x01(\tR\brecipeId\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x16\n" +
@@ -642,34 +707,35 @@ func file_proto_review_review_service_proto_rawDescGZIP() []byte {
 	return file_proto_review_review_service_proto_rawDescData
 }
 
-var file_proto_review_review_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_proto_review_review_service_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_proto_review_review_service_proto_goTypes = []any{
 	(*Empty)(nil),                 // 0: review.Empty
 	(*Review)(nil),                // 1: review.Review
-	(*ReviewCreateRequest)(nil),   // 2: review.ReviewCreateRequest
-	(*ReviewCreateResponse)(nil),  // 3: review.ReviewCreateResponse
-	(*ReviewGetListResponse)(nil), // 4: review.ReviewGetListResponse
-	(*ReviewGetByIdRequest)(nil),  // 5: review.ReviewGetByIdRequest
-	(*ReviewGetByIdResponse)(nil), // 6: review.ReviewGetByIdResponse
-	(*ReviewUpdateRequest)(nil),   // 7: review.ReviewUpdateRequest
-	(*ReviewUpdateResponse)(nil),  // 8: review.ReviewUpdateResponse
-	(*ReviewDeleteRequest)(nil),   // 9: review.ReviewDeleteRequest
-	(*ReviewDeleteResponse)(nil),  // 10: review.ReviewDeleteResponse
+	(*ReviewNats)(nil),            // 2: review.ReviewNats
+	(*ReviewCreateRequest)(nil),   // 3: review.ReviewCreateRequest
+	(*ReviewCreateResponse)(nil),  // 4: review.ReviewCreateResponse
+	(*ReviewGetListResponse)(nil), // 5: review.ReviewGetListResponse
+	(*ReviewGetByIdRequest)(nil),  // 6: review.ReviewGetByIdRequest
+	(*ReviewGetByIdResponse)(nil), // 7: review.ReviewGetByIdResponse
+	(*ReviewUpdateRequest)(nil),   // 8: review.ReviewUpdateRequest
+	(*ReviewUpdateResponse)(nil),  // 9: review.ReviewUpdateResponse
+	(*ReviewDeleteRequest)(nil),   // 10: review.ReviewDeleteRequest
+	(*ReviewDeleteResponse)(nil),  // 11: review.ReviewDeleteResponse
 }
 var file_proto_review_review_service_proto_depIdxs = []int32{
 	1,  // 0: review.ReviewGetListResponse.reviews:type_name -> review.Review
 	1,  // 1: review.ReviewGetByIdResponse.review:type_name -> review.Review
 	1,  // 2: review.ReviewUpdateResponse.review:type_name -> review.Review
-	2,  // 3: review.ReviewService.ReviewCreate:input_type -> review.ReviewCreateRequest
+	3,  // 3: review.ReviewService.ReviewCreate:input_type -> review.ReviewCreateRequest
 	0,  // 4: review.ReviewService.ReviewGetList:input_type -> review.Empty
-	5,  // 5: review.ReviewService.ReviewGetById:input_type -> review.ReviewGetByIdRequest
-	7,  // 6: review.ReviewService.ReviewUpdate:input_type -> review.ReviewUpdateRequest
-	9,  // 7: review.ReviewService.ReviewDelete:input_type -> review.ReviewDeleteRequest
-	3,  // 8: review.ReviewService.ReviewCreate:output_type -> review.ReviewCreateResponse
-	4,  // 9: review.ReviewService.ReviewGetList:output_type -> review.ReviewGetListResponse
-	6,  // 10: review.ReviewService.ReviewGetById:output_type -> review.ReviewGetByIdResponse
-	8,  // 11: review.ReviewService.ReviewUpdate:output_type -> review.ReviewUpdateResponse
-	10, // 12: review.ReviewService.ReviewDelete:output_type -> review.ReviewDeleteResponse
+	6,  // 5: review.ReviewService.ReviewGetById:input_type -> review.ReviewGetByIdRequest
+	8,  // 6: review.ReviewService.ReviewUpdate:input_type -> review.ReviewUpdateRequest
+	10, // 7: review.ReviewService.ReviewDelete:input_type -> review.ReviewDeleteRequest
+	4,  // 8: review.ReviewService.ReviewCreate:output_type -> review.ReviewCreateResponse
+	5,  // 9: review.ReviewService.ReviewGetList:output_type -> review.ReviewGetListResponse
+	7,  // 10: review.ReviewService.ReviewGetById:output_type -> review.ReviewGetByIdResponse
+	9,  // 11: review.ReviewService.ReviewUpdate:output_type -> review.ReviewUpdateResponse
+	11, // 12: review.ReviewService.ReviewDelete:output_type -> review.ReviewDeleteResponse
 	8,  // [8:13] is the sub-list for method output_type
 	3,  // [3:8] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
@@ -688,7 +754,7 @@ func file_proto_review_review_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_review_review_service_proto_rawDesc), len(file_proto_review_review_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

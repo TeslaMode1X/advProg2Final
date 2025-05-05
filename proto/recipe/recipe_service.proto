@@ -12,6 +12,10 @@ message Recipe {
   repeated string photos = 4;
 }
 
+message RecipeNats {
+  string author_id = 1;
+}
+
 message RecipeByIDRequest {
   string id = 1;
 }

@@ -5,6 +5,10 @@ option go_package = "./user";
 
 message Empty {}
 
+message UserNatsRequest {
+  string email = 1;
+}
+
 message RequestUserRegistration {
   string username = 1;
   string password = 2;

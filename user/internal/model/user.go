@@ -17,6 +17,10 @@ type User struct {
 	DeletedAt *time.Time
 }
 
+type UserNats struct {
+	Email string
+}
+
 func (u *User) Validate() error {
 	if u.Username == "" {
 		return ownErrors.ErrorUsernameRequired
