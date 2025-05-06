@@ -10,6 +10,7 @@ import (
 	grpcService "github.com/TeslaMode1X/advProg2Final/review/internal/service/grpc"
 	"github.com/TeslaMode1X/advProg2Final/review/pkg/nats"
 	"github.com/TeslaMode1X/advProg2Final/review/pkg/nats/producer"
+
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -27,8 +28,10 @@ func NewGrpcServer(cfg *config.Config, db interfaces.Database, log *log.Logger) 
 	reviewRepository := repository.NewReviewRepo(db)
 	reviewService := service.NewReviewService(reviewRepository)
 
+	ctx := context.Background()
+
 	// NATS connection
-	natsClient, err := nats.NewClient(context.Background(), []string{"nats_service:4222"}, "", true)
+	natsClient, err := nats.NewClient(ctx, []string{"nats_service:4222"}, "", true)
 	if err != nil {
 		log.Fatal(err)
 	}

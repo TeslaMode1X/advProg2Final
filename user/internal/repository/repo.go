@@ -22,14 +22,6 @@ func NewUserRepo(db interfaces.Database) *UserRepo {
 func (ur *UserRepo) UserRegisterRepo(user model.User) (uuid.UUID, error) {
 	const op = "user.repository.UserRegisterRepo"
 
-	if user.ID == uuid.Nil {
-		newID, err := uuid.NewV4()
-		if err != nil {
-			return uuid.Nil, errors.New(op + ": failed to generate UUID: " + err.Error())
-		}
-		user.ID = newID
-	}
-
 	result := ur.db.GetDB().Create(&user)
 	if result.Error != nil {
 		return uuid.Nil, errors.New(op + ": failed to create user: " + result.Error.Error())

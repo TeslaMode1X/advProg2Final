@@ -59,6 +59,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  redis:
+    container_name: redis_cache
+    image: redis:latest
+    env_file:
+      - ./user/.env.user
+    ports:
+      - "7123:6379"
+    networks:
+      - final-network
+
   user:
     container_name: user_microservice
     build:
@@ -71,6 +81,8 @@ services:
     depends_on:
       user_db:
         condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - final-network
   recipe:
