@@ -573,3 +573,14 @@ func (g *GatewayHandler) ReviewDelete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"success": "review deleted"})
 }
+
+func (g *GatewayHandler) GetUserRegisteredStatistics(c *gin.Context) {
+	r := &statistics.Empty{}
+	userStats, err := g.statisticsClient.StatisticsUser(context.Background(), r)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, userStats)
+}

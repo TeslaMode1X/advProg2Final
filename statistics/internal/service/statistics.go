@@ -46,3 +46,14 @@ func (s *StatisticsService) GetRecipeStatByIDService(id string) (*model.RecipeRe
 
 	return recipeStat, nil
 }
+
+func (s *StatisticsService) AddNewUserCounter() error {
+	const op = "statistics.service.AddNewUserCounter"
+
+	err := s.repo.AddNewUserCounter()
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}

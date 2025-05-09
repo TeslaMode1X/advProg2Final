@@ -11,9 +11,10 @@ import (
 )
 
 var (
-	userConnection   = "user:50051"
-	recipeConnection = "recipe:50052"
-	reviewConnection = "review:50053"
+	userConnection       = "user:50051"
+	recipeConnection     = "recipe:50052"
+	reviewConnection     = "review:50053"
+	statisticsConnection = "statistics:50054"
 )
 
 func main() {
@@ -39,7 +40,7 @@ func main() {
 	}
 	defer reviewConn.Close()
 
-	statisticsConn, err := grpc.Dial(reviewConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	statisticsConn, err := grpc.Dial(statisticsConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to connect to review: %v", err)
 	}
@@ -86,6 +87,12 @@ func main() {
 			protected.PUT("/update", gatewayHandler.ReviewUpdate)
 			protected.DELETE("/delete/:id", gatewayHandler.ReviewDelete)
 		}
+	}
+
+	// STATISTICS THING
+	statisticsGroup := r.Group("/statistics")
+	{
+		statisticsGroup.GET("/users", gatewayHandler.GetUserRegisteredStatistics)
 	}
 
 	err = r.Run(":8080")

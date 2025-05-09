@@ -156,6 +156,7 @@ services:
       - user
       - recipe
       - statistics
+      - review
       - nats
     networks:
       - final-network

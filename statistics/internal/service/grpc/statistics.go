@@ -18,7 +18,7 @@ func NewStatisticsServiceGrpc(statisticsService interfaces.StatisticsService) *S
 	}
 }
 
-func (s *StatisticsServiceGrpc) GetUsersStatistics(ctx context.Context, req statistics.Empty) (*statistics.StatisticsUserGetResponse, error) {
+func (s *StatisticsServiceGrpc) StatisticsUser(ctx context.Context, req *statistics.Empty) (*statistics.StatisticsUserGetResponse, error) {
 	userStatisticsRequest, err := s.statisticsService.GetUsersStatisticsService()
 	if err != nil {
 		return nil, err
@@ -26,16 +26,14 @@ func (s *StatisticsServiceGrpc) GetUsersStatistics(ctx context.Context, req stat
 
 	userIDstr := userStatisticsRequest.ID.String()
 
-	userStatisticsReturn := &statistics.StatisticsUserGetResponse{
+	return &statistics.StatisticsUserGetResponse{
 		Id:            userIDstr,
 		TotalUsers:    int32(userStatisticsRequest.TotalUsers),
 		LastUpdatedAt: timestamppb.New(userStatisticsRequest.LastUpdatedAt),
-	}
-
-	return userStatisticsReturn, nil
+	}, nil
 }
 
-func (s *StatisticsServiceGrpc) GetStatisticsRecipes(ctx context.Context, req statistics.Empty) (*statistics.StatisticsRecipesResponse, error) {
+func (s *StatisticsServiceGrpc) StatisticsRecipes(ctx context.Context, req *statistics.Empty) (*statistics.StatisticsRecipesResponse, error) {
 	statisticsRecipe, err := s.statisticsService.GetRecipesStatisticsService()
 	if err != nil {
 		return nil, err
@@ -60,7 +58,7 @@ func (s *StatisticsServiceGrpc) GetStatisticsRecipes(ctx context.Context, req st
 	}, nil
 }
 
-func (s *StatisticsServiceGrpc) GetStatisticsRecipeByID(ctx context.Context, req statistics.StatisticsRecipeByIDRequest) (*statistics.StatisticsRecipeByIDResponse, error) {
+func (s *StatisticsServiceGrpc) StatisticsRecipeByID(ctx context.Context, req *statistics.StatisticsRecipeByIDRequest) (*statistics.StatisticsRecipeByIDResponse, error) {
 	recipeStatistics, err := s.statisticsService.GetRecipeStatByIDService(req.Id)
 	if err != nil {
 		return nil, err
