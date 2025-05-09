@@ -7,7 +7,7 @@ import (
 
 type UserStatisticsEntity struct {
 	ID            uuid.UUID `gorm:"primaryKey"`
-	TotalUsers    uint      `gorm:"not null"`
+	TotalUsers    int       `gorm:"not null"`
 	LastUpdatedAt time.Time `gorm:"not null"`
 }
 

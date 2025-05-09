@@ -3,7 +3,10 @@ package server
 import (
 	"fmt"
 	"github.com/TeslaMode1X/advProg2Final/statistics/config"
+	"github.com/TeslaMode1X/advProg2Final/statistics/internal/handler"
 	interfaces "github.com/TeslaMode1X/advProg2Final/statistics/internal/interface"
+	"github.com/TeslaMode1X/advProg2Final/statistics/internal/repository"
+	"github.com/TeslaMode1X/advProg2Final/statistics/internal/service"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -33,6 +36,16 @@ func (s *ginServer) Start() {
 }
 
 func (s *ginServer) initializeStatisticsHandler() {
+	repositoryStats := repository.NewStatisticsRepository(s.db)
+	serviceStats := service.NewStatisticsService(repositoryStats)
+	serviceHandler := handler.NewStatisticsHandler(serviceStats)
+
+	statsGroup := s.app.Group("/statistics")
+	{
+		statsGroup.GET("/users", serviceHandler.GetUsersStatistics)
+		statsGroup.GET("/recipe", serviceHandler.GetRecipesStatistics)
+		statsGroup.GET("/recipe/:id", serviceHandler.GetRecipeStatByID)
+	}
 
 }
 
