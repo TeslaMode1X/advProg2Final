@@ -39,7 +39,13 @@ func main() {
 	}
 	defer reviewConn.Close()
 
-	gatewayHandler := handler.NewGatewayHandler(userConn, recipeConn, reviewConn)
+	statisticsConn, err := grpc.Dial(reviewConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to connect to review: %v", err)
+	}
+	defer statisticsConn.Close()
+
+	gatewayHandler := handler.NewGatewayHandler(userConn, recipeConn, reviewConn, statisticsConn)
 
 	// USER THING
 	userGroup := r.Group("/user")

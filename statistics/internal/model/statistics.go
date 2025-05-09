@@ -11,7 +11,6 @@ type UserStatistics struct {
 	LastUpdatedAt time.Time
 }
 
-// TODO how many reviews some recipe have and average rating
 type RecipeReviewStatistics struct {
 	ID            uuid.UUID
 	RecipeID      uuid.UUID

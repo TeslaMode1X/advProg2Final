@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/TeslaMode1X/advProg2Final/proto/gen/recipe"
 	"github.com/TeslaMode1X/advProg2Final/proto/gen/review"
+	"github.com/TeslaMode1X/advProg2Final/proto/gen/statistics"
 	"github.com/TeslaMode1X/advProg2Final/proto/gen/user"
 	"github.com/gofrs/uuid"
 	"google.golang.org/grpc"
@@ -19,16 +20,18 @@ import (
 )
 
 type GatewayHandler struct {
-	userClient   user.UserServiceClient
-	recipeClient recipe.RecipeServiceClient
-	reviewClient review.ReviewServiceClient
+	userClient       user.UserServiceClient
+	recipeClient     recipe.RecipeServiceClient
+	reviewClient     review.ReviewServiceClient
+	statisticsClient statistics.StatisticsServiceClient
 }
 
-func NewGatewayHandler(userConn, recipeConn *grpc.ClientConn, reviewConn *grpc.ClientConn) *GatewayHandler {
+func NewGatewayHandler(userConn, recipeConn *grpc.ClientConn, reviewConn *grpc.ClientConn, statisticsConn *grpc.ClientConn) *GatewayHandler {
 	return &GatewayHandler{
-		userClient:   user.NewUserServiceClient(userConn),
-		recipeClient: recipe.NewRecipeServiceClient(recipeConn),
-		reviewClient: review.NewReviewServiceClient(reviewConn),
+		userClient:       user.NewUserServiceClient(userConn),
+		recipeClient:     recipe.NewRecipeServiceClient(recipeConn),
+		reviewClient:     review.NewReviewServiceClient(reviewConn),
+		statisticsClient: statistics.NewStatisticsServiceClient(statisticsConn),
 	}
 }
 

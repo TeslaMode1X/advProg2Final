@@ -59,6 +59,21 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  statistics_db:
+    container_name: statistics_db
+    image: postgres:15
+    restart: always
+    env_file:
+      - ./statistics/.env.statistics
+    ports:
+      - "5436:5432"
+    networks:
+      - final-network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   redis:
     container_name: redis_cache
     image: redis:latest
@@ -68,7 +83,6 @@ services:
       - "7123:6379"
     networks:
       - final-network
-
   user:
     container_name: user_microservice
     build:
@@ -115,6 +129,20 @@ services:
         condition: service_healthy
     networks:
       - final-network
+  statistics:
+    container_name: statistics_service
+    build:
+      context: .
+      dockerfile: ./statistics/Dockerfile
+    ports:
+      - ":50054"
+    env_file:
+      - ./statistics/.env.statistics
+    depends_on:
+      statistics_db:
+        condition: service_healthy
+    networks:
+      - final-network
   api-gateway:
     container_name: api_gateway
     volumes:
@@ -127,6 +155,7 @@ services:
     depends_on:
       - user
       - recipe
+      - statistics
       - nats
     networks:
       - final-network

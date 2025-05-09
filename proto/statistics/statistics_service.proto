@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package statistics;
+option go_package = "./statistics";
+
+import "google/protobuf/timestamp.proto";
+
+message Empty {}
+
+message StatisticsUserGetResponse {
+  string id = 1;
+  int32 total_users = 2;
+  google.protobuf.Timestamp last_updated_at = 3;
+}
+
+message StatisticsRecipesResponse {
+  repeated StatisticsRecipeByIDResponse statistics = 1;
+}
+
+message StatisticsRecipeByIDResponse {
+  string id = 1;
+  string recipe_id = 2;
+  int32 total_reviews = 3;
+  float total_rating = 4;
+  float average_rating = 5;
+  google.protobuf.Timestamp last_updated_at = 6;
+}
+
+message StatisticsRecipeByIDRequest {
+  string id = 1;
+}
+
+service StatisticsService {
+  rpc StatisticsUser(Empty) returns (StatisticsUserGetResponse);
+  rpc StatisticsRecipes(Empty) returns (StatisticsRecipesResponse);
+  rpc StatisticsRecipeByID(StatisticsRecipeByIDRequest) returns (StatisticsRecipeByIDResponse);
+}
