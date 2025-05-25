@@ -7,6 +7,8 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/user/internal/interfaces"
 	"github.com/TeslaMode1X/advProg2Final/user/internal/model"
 	"github.com/gofrs/uuid"
+	"github.com/mailgun/mailgun-go/v4"
+	"time"
 )
 
 type UserService struct {
@@ -47,6 +49,16 @@ func (us *UserService) UserRegisterService(user model.User) (uuid.UUID, error) {
 	} else {
 		fmt.Printf("[REDIS DEBUG] User successfully cached in Redis with key pattern: user:%s\n", id)
 	}
+
+	apiKey := "9291a387d961180fbedfdd6c186e8261-f3238714-cc4fbb37"
+	domain := "sandbox8cdacc3f5b044882b390cabbe20ef6ee.mailgun.org"
+	notifyEmail := "anuar.anuar222444@gmail.com"
+
+	message := fmt.Sprintf("%s зарегистрировался в вашем приложении", user.Email)
+
+	idS, err := SendRegistrationNotification(domain, apiKey, notifyEmail, message)
+	fmt.Println(idS)
+	fmt.Println(err)
 
 	return id, nil
 }
@@ -135,4 +147,19 @@ func (us *UserService) RefreshCache() error {
 	}
 
 	return nil
+}
+
+func SendRegistrationNotification(domain, apiKey, recipient, messageBody string) (string, error) {
+	mg := mailgun.NewMailgun(domain, apiKey)
+
+	sender := fmt.Sprintf("Mailgun Sandbox <postmaster@%s>", domain)
+	subject := "Новый пользователь зарегистрировался"
+
+	message := mg.NewMessage(sender, subject, messageBody, recipient)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, id, err := mg.Send(ctx, message)
+	return id, err
 }
