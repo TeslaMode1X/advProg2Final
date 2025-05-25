@@ -122,3 +122,17 @@ func (us *UserService) UserUpdatePasswordService(id, oldPassword, newPassword st
 
 	return nil
 }
+
+func (us *UserService) RefreshCache() error {
+	users, err := us.userRepo.UserGetAllRepo()
+	if err != nil {
+		return err
+	}
+
+	err = us.redisCache.SetMany(context.Background(), users)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

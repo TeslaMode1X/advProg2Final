@@ -19,6 +19,17 @@ func NewUserRepo(db interfaces.Database) *UserRepo {
 	return &UserRepo{db: db}
 }
 
+func (ur *UserRepo) UserGetAllRepo() ([]*model.User, error) {
+	var dao []*model.User
+
+	err := ur.db.GetDB().Find(&dao).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return dao, nil
+}
+
 func (ur *UserRepo) UserRegisterRepo(user model.User) (uuid.UUID, error) {
 	const op = "user.repository.UserRegisterRepo"
 

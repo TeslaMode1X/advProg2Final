@@ -49,7 +49,7 @@ func (c *Client) Set(ctx context.Context, user model.User) error {
 	return c.client.Unwrap().Set(ctx, c.key(user.ID), data, c.ttl).Err()
 }
 
-func (c *Client) SetMany(ctx context.Context, users []model.User) error {
+func (c *Client) SetMany(ctx context.Context, users []*model.User) error {
 	pipe := c.client.Unwrap().Pipeline()
 	for _, user := range users {
 		data, err := json.Marshal(user)

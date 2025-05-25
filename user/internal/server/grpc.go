@@ -19,11 +19,12 @@ import (
 )
 
 type grpcServerObject struct {
-	server     *grpc.Server
-	cfg        *config.Config
-	db         interfaces.Database
-	log        *log.Logger
-	natsClient *nats.Client
+	server             *grpc.Server
+	cfg                *config.Config
+	db                 interfaces.Database
+	log                *log.Logger
+	natsClient         *nats.Client
+	cacheRefreshCancel context.CancelFunc
 }
 
 func NewGrpcServer(conf *config.Config, db interfaces.Database, log *log.Logger) interfaces.Server {
@@ -63,15 +64,19 @@ func NewGrpcServer(conf *config.Config, db interfaces.Database, log *log.Logger)
 
 	grpcServer := grpc.NewServer()
 
+	server := &grpcServerObject{
+		server:     grpcServer,
+		cfg:        conf,
+		db:         db,
+		log:        log,
+		natsClient: natsClient,
+	}
+
+	server.startCacheRefreshJob(ctx, userService, 10*time.Hour)
+
 	user.RegisterUserServiceServer(grpcServer, grpcService.NewUserServiceGrpc(userService, userProducer))
 
-	return &grpcServerObject{
-		grpcServer,
-		conf,
-		db,
-		log,
-		natsClient,
-	}
+	return server
 }
 
 func (s *grpcServerObject) Start() {
@@ -89,4 +94,32 @@ func (s *grpcServerObject) Start() {
 	if err = s.server.Serve(lis); err != nil {
 		s.log.Fatalf("Failed to serve: %v", err)
 	}
+}
+
+func (s *grpcServerObject) startCacheRefreshJob(ctx context.Context, userService *service.UserService, refreshInterval time.Duration) {
+	refreshCtx, cancel := context.WithCancel(ctx)
+	s.cacheRefreshCancel = cancel
+
+	go func() {
+		ticker := time.NewTicker(refreshInterval)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				log.Println("Running scheduled cache refresh...")
+				err := userService.RefreshCache()
+				if err != nil {
+					log.Printf("Scheduled cache refresh failed: %v", err)
+				} else {
+					log.Println("Scheduled cache refresh completed successfully")
+				}
+			case <-refreshCtx.Done():
+				log.Println("Cache refresh job terminated")
+				return
+			}
+		}
+	}()
+
+	log.Printf("Background cache refresh job started with %v interval", refreshInterval)
 }
