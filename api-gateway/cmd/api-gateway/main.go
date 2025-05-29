@@ -17,28 +17,29 @@ var (
 	recipeConnection     = "recipe:50052"
 	reviewConnection     = "review:50053"
 	statisticsConnection = "statistics:50054"
-
-	//Metrics
-	requestCounter = prometheus.NewCounterVec(
+	requestCounter       = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "api_gateway_request_total",
-			Help: "Total Number Of requests to API Gateway",
+			Name: "api_gateway_requests_total",
+			Help: "Total number of requests to API Gateway",
 		},
-		[]string{"path"})
+		[]string{"path"},
+	)
 )
 
 func init() {
-	//METRICS REGISTRATION!
+	// Регистрируем метрики
 	prometheus.MustRegister(requestCounter)
 }
 
 func main() {
 	r := gin.Default()
 
-	//Prometheus endpoint
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	err := load.LoadDotEnv()
+	if err != nil {
+		log.Fatalf("Failed to load .env: %v", err)
+	}
 
 	userConn, err := grpc.Dial(userConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
