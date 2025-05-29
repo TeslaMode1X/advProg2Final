@@ -11,12 +11,20 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"io"
 	"log"
+	"mime"
 	"net/http"
+	"net/url"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	photoDir = "/app/photo"
 )
 
 type GatewayHandler struct {
@@ -583,4 +591,57 @@ func (g *GatewayHandler) GetUserRegisteredStatistics(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, userStats)
+}
+
+func (g *GatewayHandler) GetPhotoByPath(c *gin.Context) {
+	path, err := url.PathUnescape(c.Param("path"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid path"})
+		return
+	}
+	if path == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "path is required"})
+		return
+	}
+
+	filePath := filepath.Join(photoDir, path)
+	if !isPathSafe(filePath, photoDir) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "access to file is forbidden"})
+		return
+	}
+
+	if _, err = os.Stat(filePath); os.IsNotExist(err) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "file not found"})
+		return
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to open file"})
+		return
+	}
+	defer file.Close()
+
+	contentType := mime.TypeByExtension(filepath.Ext(path))
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
+	// Установка заголовков
+	c.Header("Content-Type", contentType)
+	c.Header("Content-Disposition", `inline; filename="`+filepath.Base(path)+`"`)
+
+	// Копирование файла в ответ
+	_, err = io.Copy(c.Writer, file)
+	if err != nil {
+		log.Printf("failed to write response: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send file"})
+		return
+	}
+}
+
+func isPathSafe(filePath, baseDir string) bool {
+	cleanBase := filepath.Clean(baseDir)
+	cleanFile := filepath.Clean(filePath)
+	return filepath.HasPrefix(cleanFile, cleanBase)
 }
