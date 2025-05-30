@@ -165,6 +165,10 @@ func main() {
 			requestCounter.WithLabelValues("/statistics/users").Inc()
 			gatewayHandler.GetUserRegisteredStatistics(c)
 		})
+		statisticsGroup.GET("/review", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/statistics/review").Inc()
+			gatewayHandler.GetReviewStatistics(c)
+		})
 	}
 
 	// PHOTO THING

@@ -593,6 +593,17 @@ func (g *GatewayHandler) GetUserRegisteredStatistics(c *gin.Context) {
 	c.JSON(http.StatusOK, userStats)
 }
 
+func (g *GatewayHandler) GetReviewStatistics(c *gin.Context) {
+	r := &statistics.Empty{}
+	userStats, err := g.statisticsClient.StatisticsRecipes(context.Background(), r)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, userStats)
+}
+
 func (g *GatewayHandler) GetPhotoByPath(c *gin.Context) {
 	path, err := url.PathUnescape(c.Param("path"))
 	if err != nil {
