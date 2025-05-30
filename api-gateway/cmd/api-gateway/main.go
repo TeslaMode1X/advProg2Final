@@ -165,6 +165,12 @@ func main() {
 		})
 	}
 
+	// PHOTO THING
+	photoGroup := r.Group("/photo")
+	{
+		photoGroup.GET("/get/:path", gatewayHandler.GetPhotoByPath)
+	}
+
 	err = r.Run(":8080")
 	if err != nil {
 		log.Fatalf("Failed to run server: %v", err)
