@@ -4,12 +4,14 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/api-gateway/internal/handler"
 	"github.com/TeslaMode1X/advProg2Final/api-gateway/internal/middleware"
 	"github.com/TeslaMode1X/advProg2Final/api-gateway/pkg/load"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
+	"time"
 )
 
 var (
@@ -170,6 +172,15 @@ func main() {
 	{
 		photoGroup.GET("/get/:path", gatewayHandler.GetPhotoByPath)
 	}
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:9999"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	err = r.Run(":8080")
 	if err != nil {
