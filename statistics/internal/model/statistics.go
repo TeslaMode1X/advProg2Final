@@ -19,3 +19,7 @@ type RecipeReviewStatistics struct {
 	AverageRating float32
 	LastUpdatedAt time.Time
 }
+
+func (RecipeReviewStatistics) TableName() string {
+	return "recipe_reviews"
+}

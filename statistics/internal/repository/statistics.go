@@ -97,3 +97,48 @@ func (s *StatisticsRepository) AddNewUserCounter() error {
 
 	return nil
 }
+
+func (s *StatisticsRepository) AddNewReview(instance model.RecipeReviewStatistics) error {
+	const op = "statistics.repository.AddNewReview"
+
+	var reviewStat model.RecipeReviewStatistics
+
+	result := s.db.GetDB().Where("recipe_id = ?", instance.RecipeID).First(&reviewStat)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			newID, err := uuid.NewV4()
+			if err != nil {
+				return fmt.Errorf("%s: failed to generate UUID: %w", op, err)
+			}
+
+			reviewStat = model.RecipeReviewStatistics{
+				ID:            newID,
+				RecipeID:      instance.RecipeID,
+				TotalReviews:  1,
+				TotalRating:   instance.TotalRating,
+				AverageRating: instance.TotalRating,
+				LastUpdatedAt: time.Now(),
+			}
+
+			if err := s.db.GetDB().Create(&reviewStat).Error; err != nil {
+				return fmt.Errorf("%s: failed to create new review statistics: %w", op, err)
+			}
+
+			s.db.GetDB().Logger.Info(context.Background(), "Created new review statistics record with ID: %s for RecipeID: %s", newID.String(), instance.RecipeID.String())
+			return nil
+		}
+
+		return fmt.Errorf("%s: failed to query review statistics: %w", op, result.Error)
+	}
+
+	reviewStat.TotalReviews++
+	reviewStat.TotalRating += instance.TotalRating
+	reviewStat.AverageRating = reviewStat.TotalRating / float32(reviewStat.TotalReviews)
+	reviewStat.LastUpdatedAt = time.Now()
+
+	if err := s.db.GetDB().Save(&reviewStat).Error; err != nil {
+		return fmt.Errorf("%s: failed to update review statistics: %w", op, err)
+	}
+
+	return nil
+}

@@ -7,4 +7,5 @@ type StatisticsRepo interface {
 	GetRecipesStatisticsRepo() ([]*model.RecipeReviewStatistics, error)
 	GetRecipeStatByIDRepo(id string) (*model.RecipeReviewStatistics, error)
 	AddNewUserCounter() error
+	AddNewReview(model.RecipeReviewStatistics) error
 }

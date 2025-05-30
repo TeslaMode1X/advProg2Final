@@ -47,6 +47,17 @@ func (s *StatisticsService) GetRecipeStatByIDService(id string) (*model.RecipeRe
 	return recipeStat, nil
 }
 
+func (s *StatisticsService) AddNewReview(modEl model.RecipeReviewStatistics) error {
+	const op = "statistics.service.AddNewReview"
+
+	err := s.repo.AddNewReview(modEl)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}
+
 func (s *StatisticsService) AddNewUserCounter() error {
 	const op = "statistics.service.AddNewUserCounter"
 

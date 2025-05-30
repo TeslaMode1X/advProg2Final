@@ -9,4 +9,5 @@ type StatisticsService interface {
 	GetRecipesStatisticsService() ([]*model.RecipeReviewStatistics, error)
 	GetRecipeStatByIDService(id string) (*model.RecipeReviewStatistics, error)
 	AddNewUserCounter() error
+	AddNewReview(model.RecipeReviewStatistics) error
 }

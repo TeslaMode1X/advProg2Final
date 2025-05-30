@@ -53,8 +53,14 @@ func NewGrpcServer(cfg *config.Config, db interfaces.Database, log *log.Logger) 
 		Handler: userHandler.Handler,
 	})
 
-	statistics.RegisterStatisticsServiceServer(grpcServer, grpcService.NewStatisticsServiceGrpc(statisticsService))
+	reviewHandler := natsHandler.NewReviewHandler(statisticsService)
+	s.pubSub.Subscribe(consumer.PubSubSubscriptionConfig{
+		Subject: "reviews.review",
+		Handler: reviewHandler.HandlerReview,
+	})
 
+	statistics.RegisterStatisticsServiceServer(grpcServer, grpcService.NewStatisticsServiceGrpc(statisticsService))
+	
 	return s
 }
 
