@@ -5,6 +5,8 @@ import (
 	"github.com/TeslaMode1X/advProg2Final/api-gateway/internal/middleware"
 	"github.com/TeslaMode1X/advProg2Final/api-gateway/pkg/load"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -15,12 +17,29 @@ var (
 	recipeConnection     = "recipe:50052"
 	reviewConnection     = "review:50053"
 	statisticsConnection = "statistics:50054"
+	requestCounter       = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "api_gateway_requests_total",
+			Help: "Total number of requests to API Gateway",
+		},
+		[]string{"path"},
+	)
 )
+
+func init() {
+	// Регистрируем метрики
+	prometheus.MustRegister(requestCounter)
+}
 
 func main() {
 	r := gin.Default()
 
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
 	err := load.LoadDotEnv()
+	if err != nil {
+		log.Fatalf("Failed to load .env: %v", err)
+	}
 
 	userConn, err := grpc.Dial(userConnection, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -51,48 +70,99 @@ func main() {
 	// USER THING
 	userGroup := r.Group("/user")
 	{
-		userGroup.POST("/login", gatewayHandler.UserLogin)
-		userGroup.POST("/registration", gatewayHandler.UserRegistration)
-		userGroup.GET("/:id", gatewayHandler.UserGetById)
+		userGroup.POST("/login", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/user/login").Inc()
+			gatewayHandler.UserLogin(c)
+		})
+		userGroup.POST("/registration", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/user/registration").Inc()
+			gatewayHandler.UserRegistration(c)
+		})
+		userGroup.GET("/:id", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/user/:id").Inc()
+			gatewayHandler.UserGetById(c)
+		})
 
 		protected := userGroup.Group("/", middleware.AuthRequired())
 		{
-			protected.GET("/exists/:id", gatewayHandler.UserExists)
-			protected.DELETE("/:id", gatewayHandler.UserDeleteById)
-			protected.PUT("", gatewayHandler.UserChangePassword)
+			protected.GET("/exists/:id", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/user/exists/:id").Inc()
+				gatewayHandler.UserExists(c)
+			})
+			protected.DELETE("/:id", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/user/:id").Inc()
+				gatewayHandler.UserDeleteById(c)
+			})
+			protected.PUT("", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/user").Inc()
+				gatewayHandler.UserChangePassword(c)
+			})
 		}
 	}
 
 	// RECIPE THING
 	recipeGroup := r.Group("/recipe")
 	{
-		recipeGroup.GET("/list", gatewayHandler.RecipeList)
-		recipeGroup.GET("/:id", gatewayHandler.RecipeByID)
+		recipeGroup.GET("/list", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/recipe/list").Inc()
+			gatewayHandler.RecipeList(c)
+		})
+		recipeGroup.GET("/:id", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/recipe/:id").Inc()
+			gatewayHandler.RecipeByID(c)
+		})
 		protected := recipeGroup.Group("/", middleware.AuthRequired())
 		{
-			protected.POST("/create", gatewayHandler.RecipeCreate)
-			protected.PUT("/update", gatewayHandler.RecipeUpdate)
-			protected.DELETE("/delete/:id", gatewayHandler.RecipeDelete)
+			protected.POST("/create", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/recipe/create").Inc()
+				gatewayHandler.RecipeCreate(c)
+			})
+			protected.PUT("/update", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/recipe/update").Inc()
+				gatewayHandler.RecipeUpdate(c)
+			})
+			protected.DELETE("/delete/:id", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/recipe/delete/:id").Inc()
+				gatewayHandler.RecipeDelete(c)
+			})
 		}
 	}
 
 	// REVIEW THING
 	reviewGroup := r.Group("/review")
 	{
-		reviewGroup.GET("/list", gatewayHandler.ReviewList)
-		reviewGroup.GET("/:id", gatewayHandler.ReviewById)
+		reviewGroup.GET("/list", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/review/list").Inc()
+			gatewayHandler.ReviewList(c)
+		})
+		reviewGroup.GET("/:id", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/review/:id").Inc()
+			gatewayHandler.ReviewById(c)
+		})
 		protected := reviewGroup.Group("/", middleware.AuthRequired())
 		{
-			protected.POST("/create", gatewayHandler.ReviewCreate)
-			protected.PUT("/update", gatewayHandler.ReviewUpdate)
-			protected.DELETE("/delete/:id", gatewayHandler.ReviewDelete)
+			protected.POST("/create", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/review/create").Inc()
+				gatewayHandler.ReviewCreate(c)
+			})
+			protected.PUT("/update", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/review/update").Inc()
+				gatewayHandler.ReviewUpdate(c)
+			})
+			protected.DELETE("/delete/:id", func(c *gin.Context) {
+				requestCounter.WithLabelValues("/review/delete/:id").Inc()
+				gatewayHandler.ReviewDelete(c)
+			})
 		}
 	}
 
 	// STATISTICS THING
 	statisticsGroup := r.Group("/statistics")
 	{
-		statisticsGroup.GET("/users", gatewayHandler.GetUserRegisteredStatistics)
+		statisticsGroup.GET("/users", func(c *gin.Context) {
+			requestCounter.WithLabelValues("/statistics/users").Inc()
+			gatewayHandler.GetUserRegisteredStatistics(c)
+		})
 	}
 
 	// PHOTO THING
